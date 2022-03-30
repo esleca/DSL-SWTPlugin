@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: dsl.unit.tests
+Bundle-SymbolicName: com.tec.dslunittests;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: TEC
+Automatic-Module-Name: com.tec.dslunittests
+Bundle-RequiredExecutionEnvironment: JavaSE-16
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.23.0",
+ org.eclipse.ui;bundle-version="3.119.100"

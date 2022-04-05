@@ -13,7 +13,6 @@ import com.tec.dslunittests.Views.CreationWindow;
 
 public class UnitTests extends ViewPart {
 	
-	private Composite window;
 
 	//private IGestorDSL dsl;
 
@@ -23,6 +22,7 @@ public class UnitTests extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
 		//Creates window to create individual unit tests
 		CreationWindow creationWindow = new CreationWindow();
 		creationWindow.render(parent);

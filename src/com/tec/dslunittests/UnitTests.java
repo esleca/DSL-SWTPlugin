@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import com.tec.dslunittests.Views.CreationWindow;
+import com.tec.dslunittests.Views.WelcomeWindow;
 
 public class UnitTests extends ViewPart {
 	
@@ -24,8 +25,8 @@ public class UnitTests extends ViewPart {
 	public void createPartControl(Composite parent) {
 		
 		//Creates window to create individual unit tests
-		CreationWindow creationWindow = new CreationWindow();
-		creationWindow.render(parent);
+		WelcomeWindow welcomeWindow = new WelcomeWindow();
+		welcomeWindow.render(parent);
 	}
 
 	@Override

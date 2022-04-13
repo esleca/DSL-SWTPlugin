@@ -13,16 +13,16 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class CreationWindow {
-
+public class EditionWindow {
+	
 	private Group formGroup;
-	private Button saveBtn, cleanBtn;
+	private Button saveBtn, cancelBtn;
 	private Label label;
 	private Text nameTxt, expectedTxt, parametersTxt;
 	private Composite layer;
-
+	
 	/**
-	 * Defines widgets and layout for the unit test creation window
+	 * Defines widgets and layout for the unit test edition window
 	 *
 	 * @param parent main composite in which the view must be rendered
 	 * @return the composite ready to be displayed
@@ -132,11 +132,11 @@ public class CreationWindow {
 		saveBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		saveBtn.addListener(SWT.Selection, event -> save());
 
-		// Clears the data of the form
-		cleanBtn = new Button(formGroup, SWT.PUSH);
-		cleanBtn.setText("Clean");
-		cleanBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		cleanBtn.addListener(SWT.Selection, event -> clear());
+		// Cancels the update
+		cancelBtn = new Button(formGroup, SWT.PUSH);
+		cancelBtn.setText("Cancel");
+		cancelBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		cancelBtn.addListener(SWT.Selection, event -> cancel());
 
 		formGroup.pack();
 
@@ -159,13 +159,13 @@ public class CreationWindow {
 		String name = nameTxt.getText();
 		String parameters = parametersTxt.getText();
 		String expected = expectedTxt.getText();
-		System.out.println("---- New unit test ----");
+		System.out.println("---- Edited unit test ----");
 		System.out.println("Name: " + name);
 		System.out.println("Parameters: " + parameters);
 		System.out.println("Expected: " + expected);
 	}
 
-	private void clear() {
+	private void cancel() {
 		nameTxt.setText(getUTName());
 		parametersTxt.setText("");
 		expectedTxt.setText("");

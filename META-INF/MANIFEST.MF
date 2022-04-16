@@ -7,7 +7,8 @@ Bundle-Vendor: TEC
 Automatic-Module-Name: com.tec.dslunittests
 Bundle-RequiredExecutionEnvironment: JavaSE-16
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.23.0",
- org.eclipse.ui;bundle-version="3.119.100"
+ org.eclipse.ui;bundle-version="3.119.100",
+ com.google.gson;bundle-version="2.8.9"
 Import-Package: javax.inject;version="1.0.0",
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.ui.services,

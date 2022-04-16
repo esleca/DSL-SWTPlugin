@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import org.eclipse.ui.part.ViewPart;
 
-import com.tec.dslunittests.Views.CreationWindow;
-import com.tec.dslunittests.Views.WelcomeWindow;
+import com.tec.dslunittests.views.CreationWindow;
+import com.tec.dslunittests.views.WelcomeWindow;
 
 public class UnitTests extends ViewPart {
 	

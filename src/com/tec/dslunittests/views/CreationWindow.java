@@ -1,4 +1,4 @@
-package com.tec.dslunittests.Views;
+package com.tec.dslunittests.views;
 
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;

@@ -1,4 +1,4 @@
-package com.tec.dslunittests.Views;
+package com.tec.dslunittests.views;
 
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.tec.dslunittests.models.UnitTestData;
+
 public class EditionWindow {
 	
 	private Group formGroup;
@@ -20,6 +22,7 @@ public class EditionWindow {
 	private Label label;
 	private Text nameTxt, expectedTxt, parametersTxt;
 	private Composite layer;
+	private UnitTestData testData;
 	
 	/**
 	 * Defines widgets and layout for the unit test edition window
@@ -27,7 +30,10 @@ public class EditionWindow {
 	 * @param parent main composite in which the view must be rendered
 	 * @return the composite ready to be displayed
 	 */
-	public Composite render(Composite parent) {
+	public Composite render(Composite parent, UnitTestData testData) {
+		//Data of the unit test
+		this.testData = testData;
+		
 		//Creates new composite layer to add widgets
 		layer = new Composite(parent, SWT.NONE);
 		layer.setLayout(new GridLayout(3, false));
@@ -70,6 +76,7 @@ public class EditionWindow {
 		makeBold(label);
 
 		label = new Label(left, SWT.NONE);
+		label.setText(testData.getPackageName());
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		label = new Label(left, SWT.NONE);
@@ -78,6 +85,7 @@ public class EditionWindow {
 		makeBold(label);
 
 		label = new Label(left, SWT.NONE);
+		label.setText(testData.getClassName());
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		label = new Label(left, SWT.NONE);
@@ -86,6 +94,7 @@ public class EditionWindow {
 		makeBold(label);
 
 		label = new Label(left, SWT.NONE);
+		label.setText(testData.getFunctionName());
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		// Form to define the parameters of the unit test
@@ -105,7 +114,7 @@ public class EditionWindow {
 
 		nameTxt = new Text(formGroup, SWT.BORDER);
 		nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		nameTxt.setText(getUTName());
+		nameTxt.setText(testData.getTestName());
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Parameters:");
@@ -155,6 +164,12 @@ public class EditionWindow {
 		label.setFont(boldFont);
 	}
 
+	/**
+	 * Submits edited data of the unit test
+	 *
+	 * @param 
+	 * @return
+	 */
 	private void save() {
 		String name = nameTxt.getText();
 		String parameters = parametersTxt.getText();
@@ -166,13 +181,10 @@ public class EditionWindow {
 	}
 
 	private void cancel() {
-		nameTxt.setText(getUTName());
-		parametersTxt.setText("");
-		expectedTxt.setText("");
+		nameTxt.setText(testData.getTestName());
+		//parametersTxt.setText("");
+		//expectedTxt.setText("");
 	}
 
-	private String getUTName() {
-		return "Random name";
-	}
 
 }

@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class WelcomeWindow {
 
-	private Button newUTBtn, editUTBtn, packageBtn, classBtn, functionBtn;
+	private Button newUTBtn, packageBtn, classBtn, functionBtn;
 	private Composite layer, page;
 	private CTabFolder folder;
 
@@ -49,12 +49,7 @@ public class WelcomeWindow {
 		packageBtn.setText("Package");
 		packageBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		packageBtn.addListener(SWT.Selection, event -> {
-			try {
-				loadPackageWindow(folder);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			loadPackageWindow(folder);
 		});
 
 		// Load class unit test window
@@ -92,8 +87,7 @@ public class WelcomeWindow {
 		parent.requestLayout();
 	}
 
-
-	private void loadPackageWindow(Composite parent) throws IOException {
+	private void loadPackageWindow(Composite parent) {
 
 		int idx = folder.getSelectionIndex();
 

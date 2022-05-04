@@ -1,14 +1,9 @@
 package com.tec.dslunittests;
 
-import java.util.Iterator;
-
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 public class ExitHandler implements IHandler {
 
@@ -31,17 +26,6 @@ public class ExitHandler implements IHandler {
 		//IStructuredSelection ss = (IStructuredSelection) HandlerUtil.getActiveMenuSelection(event);
 		//System.out.println(ss.getFirstElement());
 		//HandlerUtil.getActiveWorkbenchWindow(event).close();
-		
-		 ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)
-	                .getActivePage().getSelection();
-	        if (selection != null & selection instanceof IStructuredSelection) {
-	            IStructuredSelection strucSelection = (IStructuredSelection) selection;
-	            for (Iterator<Object> iterator = strucSelection.iterator(); iterator
-	                    .hasNext();) {
-	                Object element = iterator.next();
-	                System.out.println(element.toString());
-	            }
-	        }
 	        
 		return null;
 	}

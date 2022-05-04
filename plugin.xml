@@ -24,6 +24,12 @@
                   style="push"
                   tooltip="Shows unit tests for class">
             </command>
+            <command
+                  commandId="com.tec.dslunittests.commands.ShowUT"
+                  label="Show package unit tests"
+                  style="push"
+                  tooltip="Show available unit tests for package">
+            </command>
          </menu>
       </menuContribution>
       <menuContribution
@@ -52,6 +58,11 @@
             defaultHandler="com.tec.dslunittests.commands.classScopeHandler"
             id="com.tec.dslunittests.commands.classScope"
             name="ClassScope">
+      </command>
+      <command
+            defaultHandler="com.tec.dslunittests.commands.ShowUTHandler"
+            id="com.tec.dslunittests.commands.ShowUT"
+            name="ShowUT">
       </command>
    </extension>
    <extension

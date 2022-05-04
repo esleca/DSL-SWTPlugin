@@ -1,7 +1,5 @@
 package com.tec.dslunittests.views;
 
-import java.io.IOException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -104,5 +102,7 @@ public class WelcomeWindow {
 		// Refreshes view
 		parent.requestLayout();
 	}
+	
+	
 
 }

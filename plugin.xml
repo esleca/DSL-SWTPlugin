@@ -19,12 +19,6 @@
                id="unitTestMenu"
                label="Unit test">
             <command
-                  commandId="com.tec.dslunittests.Exit"
-                  label="Exit"
-                  style="push"
-                  tooltip="Shows unit tests for class">
-            </command>
-            <command
                   commandId="com.tec.dslunittests.commands.ShowUT"
                   label="Show package unit tests"
                   style="push"
@@ -49,11 +43,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="com.tec.dslunittests.ExitHandler"
-            id="com.tec.dslunittests.Exit"
-            name="Exit">
-      </command>
       <command
             defaultHandler="com.tec.dslunittests.commands.classScopeHandler"
             id="com.tec.dslunittests.commands.classScope"

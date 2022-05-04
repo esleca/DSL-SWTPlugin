@@ -94,6 +94,7 @@ public class ShowUTHandler implements IHandler {
 		}
 
 		try {
+			//Retrieves or displays plugin view into workbench
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 					.showView("com.tec.dslunittests.UnitTests");
 			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()

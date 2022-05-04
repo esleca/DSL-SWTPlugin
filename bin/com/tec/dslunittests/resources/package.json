@@ -1,0 +1,14 @@
+[
+	{
+		"package": "package_1",
+		"class": "class1",
+		"function": "getEdades",
+		"testName": "getEdades_test1"
+	},
+	{
+		"package": "package_1",
+		"class": "class1",
+		"function": "getEdades",
+		"testName": "getEdades_test1"
+	}
+]

@@ -23,12 +23,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import com.tec.dslunittests.UnitTests;
-import com.tec.dslunittests.views.PackageUnitTestWindow;
+import com.tec.dslunittests.views.PackageScopeWindow;
 
-public class ShowUTHandler implements IHandler {
-
-	private IWorkbenchWindow window;
-	private IWorkbenchPage activePage;
+public class PackageScopeHandler implements IHandler {
 
 	private IProject theProject;
 	private IResource theResource;
@@ -87,10 +84,9 @@ public class ShowUTHandler implements IHandler {
 			this.workspaceName = this.theResource.getWorkspace().getRoot().getLocation().toOSString();
 			this.projectName = this.theProject.getName();
 			this.fileName = this.theResource.getName();
+			
 			System.out.println(theResource.getFullPath());
-
 			System.out.println("Path: " + workspaceName + " " + projectName + " " + fileName);
-
 		}
 
 		try {
@@ -110,8 +106,8 @@ public class ShowUTHandler implements IHandler {
 			item.setText("Package unit test");
 			folder.setSelection(idx + 1);
 
-			// Creates window to create individual unit tests
-			PackageUnitTestWindow packageWindow = new PackageUnitTestWindow();
+			// Creates window to show package unit tests
+			PackageScopeWindow packageWindow = new PackageScopeWindow();
 			// Renders content in new tab
 			item.setControl(packageWindow.render(folder));
 

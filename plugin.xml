@@ -17,9 +17,9 @@
             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
          <menu
                id="unitTestMenu"
-               label="Unit test">
+               label="Unit test (DSL)">
             <command
-                  commandId="com.tec.dslunittests.commands.ShowUT"
+                  commandId="com.tec.dslunittests.commands.PackageScope"
                   label="Show package unit tests"
                   style="push"
                   tooltip="Show available unit tests for package">
@@ -31,7 +31,7 @@
             locationURI="popup:#AbstractTextEditorContext">
          <menu
                id="classUTMenu"
-               label="Unit tests"
+               label="Unit tests (DSL)"
                tooltip="Shows list of available unit tests">
             <command
                   commandId="com.tec.dslunittests.commands.classScope"
@@ -49,9 +49,9 @@
             name="ClassScope">
       </command>
       <command
-            defaultHandler="com.tec.dslunittests.commands.ShowUTHandler"
-            id="com.tec.dslunittests.commands.ShowUT"
-            name="ShowUT">
+            defaultHandler="com.tec.dslunittests.commands.PackageScopeHandler"
+            id="com.tec.dslunittests.commands.PackageScope"
+            name="PackageScope">
       </command>
    </extension>
    <extension

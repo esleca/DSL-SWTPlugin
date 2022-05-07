@@ -95,7 +95,7 @@ public class WelcomeWindow {
 		folder.setSelection(idx + 1);
 
 		// Creates window to create individual unit tests
-		PackageUnitTestWindow packageWindow = new PackageUnitTestWindow();
+		PackageScopeWindow packageWindow = new PackageScopeWindow();
 		// Renders content in new tab
 		item.setControl(packageWindow.render(parent));
 

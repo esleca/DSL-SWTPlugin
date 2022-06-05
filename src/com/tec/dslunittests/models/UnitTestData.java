@@ -1,9 +1,17 @@
 package com.tec.dslunittests.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UnitTestData {
 	
 	private String packageName, className, functionName, testName;
-	private String[] parameters, expected;
+	private List<Parameter> parameters;
+	private Expected expected;
+	
+	public UnitTestData() {
+		parameters = new ArrayList<Parameter>();
+	}
 	
 	public String getPackageName() {
 		return packageName;
@@ -21,11 +29,11 @@ public class UnitTestData {
 		return testName;
 	}
 	
-	public String[] getParameters() {
+	public List<Parameter> getParameters() {
 		return this.parameters;
 	}
 	
-	public String[] getExpected() {
+	public Expected getExpected() {
 		return this.expected;
 	}
 	public void setPackageName(String packageName) {
@@ -44,11 +52,11 @@ public class UnitTestData {
 		this.testName = testName;
 	}
 	
-	public void setParameters(String[] parameters) {
+	public void setParameters(List<Parameter> parameters) {
 		this.parameters = parameters;
 	}
 	
-	public void setExpected(String[]  expected) {
+	public void setExpected(Expected  expected) {
 		this.expected = expected;
 	}
 }

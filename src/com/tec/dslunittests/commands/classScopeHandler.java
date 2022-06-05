@@ -109,7 +109,7 @@ public class classScopeHandler implements IHandler {
 			folder.setSelection(idx + 1);
 
 			// Creates window to show package unit tests
-			ClassScopeWindow classWindow = new ClassScopeWindow();
+			ClassScopeWindow classWindow = new ClassScopeWindow(workspaceName +  theResource.getFullPath().toOSString());
 			// Renders content in new tab
 			item.setControl(classWindow.render(folder));
 

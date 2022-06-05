@@ -21,9 +21,10 @@ import com.tec.dslunittests.models.UnitTestData;
 
 public class ClassScopeWindow {
 
-	private Button editBtn, deleteBtn;
+	private Button editBtn, deleteBtn, newBtn;
 	private Composite layer;
 	private CTabFolder folder;
+	private String path;
 
 	private String jsonString = """
 			[
@@ -61,6 +62,14 @@ public class ClassScopeWindow {
 					"expected": ["1","2","3"]
 				}
 			]""";
+	
+	public ClassScopeWindow() {
+		
+	}
+	
+	public ClassScopeWindow(String path) {
+		this.path = path;
+	}
 
 	/**
 	 * Defines widgets and layout for the package unit test window
@@ -101,15 +110,12 @@ public class ClassScopeWindow {
 			item.setText(2, UTdata[i].getTestName());
 
 			String parameters = "";
-			for (int k = 0; k <= UTdata[i].getParameters().length - 1; k++) {
-				parameters += UTdata[i].getParameters()[k] + " ";
+			for (int k = 0; k <= UTdata[i].getParameters().size() - 1; k++) {
+				parameters += UTdata[i].getParameters().get(k) + " ";
 			}
 			item.setText(3, parameters);
 
-			String expected = "";
-			for (int k = 0; k <= UTdata[i].getExpected().length - 1; k++) {
-				expected += UTdata[i].getExpected()[k] + " ";
-			}
+			String expected = UTdata[i].getExpected().getValue();			
 			item.setText(4, expected);
 
 			// Data of the existent unit tests

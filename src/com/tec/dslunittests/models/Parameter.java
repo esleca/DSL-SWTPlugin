@@ -27,6 +27,10 @@ public class Parameter {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	public String getData() {
+		return name + " " + type + " " + value;
+	}
 
 
 }

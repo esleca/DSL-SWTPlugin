@@ -8,14 +8,22 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -49,47 +57,18 @@ public class classScopeHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// TODO Auto-generated method stub
-		System.out.print(HandlerUtil.getActiveWorkbenchWindow(event)
-                .getActivePage().getActiveEditor().getTitle());		
+		//System.out.print(HandlerUtil.getActiveWorkbenchWindow(event)
+          //      .getActivePage().getActiveEditor().getTitle());		
+	
 
-		//Code retrieved from https://stackoverflow.com/a/11580733
-		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getSelection();
-		if (selection instanceof ITreeSelection) {
-			System.out.println("Tree selection");
-			TreeSelection treeSelection = (TreeSelection) selection;
-			TreePath[] treePaths = treeSelection.getPaths();
-			TreePath treePath = treePaths[0];
 
-			// The TreePath contains a series of segments in our usage:
-			// o The first segment is usually a project
-			// o The last segment generally refers to the file
-
-			// The first segment should be a IProject
-			Object firstSegmentObj = treePath.getFirstSegment();
-			this.theProject = (IProject) ((IAdaptable) firstSegmentObj).getAdapter(IProject.class);
-			if (this.theProject == null) {
-				System.out.println("Null project");
-			}
-
-			// The last segment should be an IResource
-			Object lastSegmentObj = treePath.getLastSegment();
-			this.theResource = (IResource) ((IAdaptable) lastSegmentObj).getAdapter(IResource.class);
-			if (this.theResource == null) {
-				System.out.println("Null resource");
-			}
-
-			// As the last segment is an IResource we should be able to get an IFile
-			// reference from it
-			this.theFile = (IFile) ((IAdaptable) lastSegmentObj).getAdapter(IFile.class);
-
-			// Extract additional information from the IResource and IProject
-			this.workspaceName = this.theResource.getWorkspace().getRoot().getLocation().toOSString();
-			this.projectName = this.theProject.getName();
-			this.fileName = this.theResource.getName();
-			
-			System.out.println(theResource.getFullPath());
-			System.out.println("Path: " + workspaceName + " " + projectName + " " + fileName);
-		}
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+		IEditorPart editor = page.getActiveEditor();
+		IEditorInput input = editor.getEditorInput();
+		IPath path = ((IPathEditorInput)input).getPath();
+		System.out.println(path.toOSString());
 
 		try {
 			//Retrieves or displays plugin view into workbench
@@ -109,7 +88,7 @@ public class classScopeHandler implements IHandler {
 			folder.setSelection(idx + 1);
 
 			// Creates window to show package unit tests
-			ClassScopeWindow classWindow = new ClassScopeWindow(workspaceName +  theResource.getFullPath().toOSString());
+			ClassScopeWindow classWindow = new ClassScopeWindow(path.toOSString());
 			// Renders content in new tab
 			item.setControl(classWindow.render(folder));
 

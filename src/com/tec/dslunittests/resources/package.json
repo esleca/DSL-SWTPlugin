@@ -1,14 +1,21 @@
-[
-	{
-		"package": "package_1",
-		"class": "class1",
-		"function": "getEdades",
-		"testName": "getEdades_test1"
-	},
-	{
-		"package": "package_1",
-		"class": "class1",
-		"function": "getEdades",
-		"testName": "getEdades_test1"
-	}
-]
+{
+  "className": "EventThread",
+  "functionName": "xasx",
+  "assertType": "AreNotEqual",
+  "parameters": [
+    {
+      "name": "ewf",
+      "type": "string",
+      "value": "erf"
+    },
+    {
+      "name": "tytyt",
+      "type": "boolean",
+      "value": "bgbg"
+    }
+  ],
+  "expected": {
+    "type": "string",
+    "value": "bnb"
+  }
+}

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class UnitTestData {
 	
-	private String packageName, className, functionName, testName;
+	private String packageName, className, functionName, testName, assertType;
 	private List<Parameter> parameters;
 	private Expected expected;
 	
@@ -58,5 +58,13 @@ public class UnitTestData {
 	
 	public void setExpected(Expected  expected) {
 		this.expected = expected;
+	}
+
+	public String getAssertType() {
+		return assertType;
+	}
+
+	public void setAssertType(String assertType) {
+		this.assertType = assertType;
 	}
 }

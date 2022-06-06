@@ -6,8 +6,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
@@ -34,32 +36,27 @@ public class ClassScopeWindow {
 					"className": "class1",
 					"functionName": "getEdades",
 					"testName": "getEdades_test1",
-					"parameters" : ['param1','param2','param3'],
-					"expected": ["1","2","3"]
-				},
-				{
-					"packageName": "package_1",
-					"className": "class1",
-					"functionName": "getEdades",
-					"testName": "getEdades_test2",
-					"parameters" : ['param1','param2','param3'],
-					"expected": ["1","2","3"]
-				},
-				{
-					"packageName": "package_1",
-					"className": "class2",
-					"functionName": "getTable",
-					"testName": "getTable_test1",
-					"parameters" : ['param1','param2','param3'],
-					"expected": ["1","2","3"]
-				},
-				{
-					"packageName": "package_1",
-					"className": "class2",
-					"functionName": "getTable",
-					"testName": "getTable_test2",
-					"parameters" : ['param1','param2','param3'],
-					"expected": ["1","2","3"]
+					"expected": {
+						"type": "int",
+						"value": "14"
+					},
+					"parameters": [
+						{
+			                "name": "num1",
+			                "type": "int",
+			                "value": "9"
+			            },
+						{
+			                "name": "num2",
+			                "type": "int",
+			                "value": "2"
+			            },
+						{
+			                "name": "num3",
+			                "type": "int",
+			                "value": "3"
+			            }
+					]
 				}
 			]""";
 	
@@ -81,14 +78,69 @@ public class ClassScopeWindow {
 	public Composite render(Composite parent) {
 		// Creates new composite layer to add widgets
 		layer = new Composite(parent, SWT.NONE);
-		layer.setLayout(new FillLayout(SWT.HORIZONTAL));
+		// layer.setLayout(new FillLayout(SWT.VERTICAL));
+		layer.setLayout(new GridLayout(1, false));
+
+		// Creates new composite layer to add widgets
+		Composite topLayer = new Composite(layer, SWT.NONE);
+		topLayer.setLayout(new GridLayout(3, false));
+
+		Composite bottomLayer = new Composite(layer, SWT.NONE);
+		bottomLayer.setLayout(new FillLayout(SWT.VERTICAL));
+
+		GridData topData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData bottomData = new GridData(SWT.FILL, SWT.FILL, true, true);
+
+		topLayer.setLayoutData(topData);
+		bottomLayer.setLayoutData(bottomData);
+
+		// Columns to divide the view
+		Composite left = new Composite(topLayer, SWT.NONE);
+		Composite center = new Composite(topLayer, SWT.NONE);
+		Composite right = new Composite(topLayer, SWT.NONE);
+
+		// Alignment of the widgets inside columns
+		GridData leftData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData centerData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData rightData = new GridData(SWT.FILL, SWT.FILL, true, true);
+
+		left.setLayoutData(leftData);
+		center.setLayoutData(centerData);
+		right.setLayoutData(rightData);
+
+		// Setting layouts for the composite columns
+		GridLayout sideLayout = new GridLayout(2, true);
+		left.setLayout(sideLayout);
+		right.setLayout(sideLayout);
+
+		FillLayout centerLayout = new FillLayout(SWT.VERTICAL);
+		center.setLayout(centerLayout);
+
+		// Modifies dynamically the size of the columns on resize of the main window
+		parent.addListener(SWT.Resize, arg0 -> {
+			Point size = parent.getSize();
+
+			topData.heightHint = (int) (size.y * 0.15);
+			bottomData.heightHint = (int) (size.y - topData.heightHint);
+
+			leftData.widthHint = (int) (size.x * 0.25);
+			rightData.widthHint = (int) (size.x * 0.25);
+			centerData.widthHint = size.x - leftData.widthHint - rightData.widthHint;
+
+		});
+
+		// Saves the unit test information
+		newBtn = new Button(right, SWT.PUSH);
+		newBtn.setText("New unit test");
+		newBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		newBtn.addListener(SWT.Selection, event -> loadCreationWindow(parent));
 
 		Gson gson = new Gson();
 
 		// Transforms json data to java object
 		UnitTestData[] UTdata = gson.fromJson(jsonString, UnitTestData[].class);
 
-		Table table = new Table(layer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
+		Table table = new Table(bottomLayer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -111,7 +163,7 @@ public class ClassScopeWindow {
 
 			String parameters = "";
 			for (int k = 0; k <= UTdata[i].getParameters().size() - 1; k++) {
-				parameters += UTdata[i].getParameters().get(k) + " ";
+				parameters += UTdata[i].getParameters().get(k).getData() + " - ";
 			}
 			item.setText(3, parameters);
 
@@ -204,6 +256,32 @@ public class ClassScopeWindow {
 			// Here goes the code to delete unit test
 			System.out.println(returnCode);
 		}
+	}
+	
+	/**
+	 * Shows confirmation message and if accepted, deletes unit test
+	 *
+	 * @param parent  composite in which the view must be rendered and data 
+	 * of the unit test
+	 * @return 
+	 */
+	private void loadCreationWindow(Composite parent) {
+		folder = (CTabFolder) parent;
+
+		int idx = folder.getSelectionIndex();
+
+		// Creates new tab to display content
+		CTabItem item = new CTabItem(folder, SWT.CLOSE, idx + 1);
+		item.setText("New unit test");
+		folder.setSelection(idx + 1);
+
+		// Creates window to create individual unit tests
+		CreationWindow creationWindow = new CreationWindow(path);
+		// Renders content in new tab
+		item.setControl(creationWindow.render(parent));
+
+		// Refreshes view
+		parent.requestLayout();
 	}
 
 }

@@ -3,6 +3,11 @@ package com.tec.dslunittests.models;
 public class Expected {
 	
 	private String type, value;
+	
+	public Expected(String type, String value) {
+		this.type = type;
+		this.value = value;
+	}
 
 	public String getType() {
 		return type;

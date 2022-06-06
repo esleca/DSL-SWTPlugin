@@ -1,21 +1,27 @@
 {
-  "className": "EventThread",
-  "functionName": "xasx",
-  "assertType": "AreNotEqual",
+  "packageName": "package_1",
+  "className": "class1",
+  "functionName": "getEdades",
+  "testName": "getEdades_test1",
   "parameters": [
     {
-      "name": "ewf",
-      "type": "string",
-      "value": "erf"
+      "name": "num1",
+      "type": "int",
+      "value": "9"
     },
     {
-      "name": "tytyt",
-      "type": "boolean",
-      "value": "bgbg"
+      "name": "num2",
+      "type": "int",
+      "value": "2"
+    },
+    {
+      "name": "num3",
+      "type": "int",
+      "value": "3"
     }
   ],
   "expected": {
-    "type": "string",
-    "value": "bnb"
+    "type": "int",
+    "value": "14"
   }
 }

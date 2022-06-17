@@ -34,8 +34,9 @@ public class ClassScopeWindow {
 				{
 					"packageName": "package_1",
 					"className": "class1",
-					"functionName": "getEdades",
+					"function": "getEdades",
 					"testName": "getEdades_test1",
+					"assertion":"AreEqual"
 					"expected": {
 						"type": "int",
 						"value": "14"

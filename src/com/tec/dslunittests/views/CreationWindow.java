@@ -35,12 +35,12 @@ public class CreationWindow {
 	private Group formGroup;
 	private Button saveBtn, cleanBtn, addBtn;
 	private Label label, paramListLbl;
-	private Text nameTxt, functionTxt, expectedTxt, parametersTxt, valueTxt, assertTxt;
+	private Text nameTxt, functionTxt, expectedTxt, newParameterTxt, newParameterValueTxt, assertionTxt;
 	private Composite layer;
-	private String selectedAssert, selectedAssertType, selectedParamType, path;
+	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
 	private Gson gson;
 	private UnitTestData data = new UnitTestData();
-	private Combo assertTypesCb, assertCb;
+	private Combo expectedTypeCb, assertionsCb;
 
 	public CreationWindow() {
 
@@ -132,41 +132,41 @@ public class CreationWindow {
 		nameTxt.setText(getUTName());
 
 		label = new Label(formGroup, SWT.NONE);
-		label.setText("Parameter:");
+		label.setText("Parameters:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
 		// Create a dropdown Combo & Read only
 		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
-		// Define available asserts
-		String[] types = new String[] { "integer", "string", "boolean", "char", "double", "float" };
+		// Define available data types
+		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float","long" };
 		typesCb.setItems(types);
-		typesCb.setText("Data type");
+		typesCb.select(0);
 
 		// User select a item in the Combo.
 		typesCb.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int idx = typesCb.getSelectionIndex();
-				selectedParamType = typesCb.getItem(idx);
+				selectedNewParamType = typesCb.getItem(idx);
 			}
 		});
 
-		parametersTxt = new Text(formGroup, SWT.BORDER);
-		parametersTxt.setMessage("name");
-		parametersTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		newParameterTxt = new Text(formGroup, SWT.BORDER);
+		newParameterTxt.setMessage("Parameter name");
+		newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
-		valueTxt = new Text(formGroup, SWT.BORDER);
-		valueTxt.setMessage("value");
-		valueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		newParameterValueTxt = new Text(formGroup, SWT.BORDER);
+		newParameterValueTxt.setMessage("Parameter value");
+		newParameterValueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
-		// Clears the data of the form
+		// Adds new parameter to the list
 		addBtn = new Button(formGroup, SWT.PUSH);
 		addBtn.setText("+");
 		addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		addBtn.addListener(SWT.Selection,
-				event -> addParameter(parametersTxt.getText(), selectedParamType, valueTxt.getText()));
+				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText()));
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Expected:");
@@ -174,44 +174,44 @@ public class CreationWindow {
 		makeBold(label);
 
 		// Create a dropdown Combo & Read only
-		assertCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		String[] asserts = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOf" };
-		assertCb.setItems(asserts);
-		assertCb.setText("Assert");
+		String[] assertions = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOfType" };
+		assertionsCb.setItems(assertions);
+		assertionsCb.setText("Assert");
 
 		// Create a dropdown Combo & Read only
-		assertTypesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		expectedTypeCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		assertTypesCb.setItems(types);
-		assertTypesCb.setText("Data type");
-		assertTypesCb.setVisible(false);
+		expectedTypeCb.setItems(types);
+		expectedTypeCb.setText("Data type");
+		expectedTypeCb.setVisible(false);
 
 		// User select a item in the Combo.
-		assertTypesCb.addSelectionListener(new SelectionAdapter() {
+		expectedTypeCb.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int idx = assertTypesCb.getSelectionIndex();
-				selectedAssertType = assertTypesCb.getItem(idx);
+				int idx = expectedTypeCb.getSelectionIndex();
+				selectedExpectedType = expectedTypeCb.getItem(idx);
 			}
 		});
 
 		// User select a item in the Combo.
-		assertCb.addSelectionListener(new SelectionAdapter() {
+		assertionsCb.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int idx = assertCb.getSelectionIndex();
-				String selected = assertCb.getItem(idx);
+				int idx = assertionsCb.getSelectionIndex();
+				String selected = assertionsCb.getItem(idx);
 				if (selected.equals("IsNull") || selected.equals("IsTrue") || selected.equals("IsFalse")) {
-					selectedAssert = selected;
-					assertTypesCb.setVisible(false);
+					selectedAssertion = selected;
+					expectedTypeCb.setVisible(false);
 					expectedTxt.setVisible(false);
 					expectedTxt.setText("");
 				} else {
-					selectedAssert = selected;
-					assertTypesCb.setVisible(true);
+					selectedAssertion = selected;
+					expectedTypeCb.setVisible(true);
 					expectedTxt.setVisible(true);
 					expectedTxt.setText("");
 
@@ -221,7 +221,7 @@ public class CreationWindow {
 
 		expectedTxt = new Text(formGroup, SWT.BORDER);
 		expectedTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		expectedTxt.setMessage("value");
+		expectedTxt.setMessage("Expected value");
 		expectedTxt.setVisible(false);
 
 		label = new Label(formGroup, SWT.NONE);
@@ -281,11 +281,12 @@ public class CreationWindow {
 	}
 
 	private void save(Shell parent) {
+		data.setClassPath(path);
 		data.setClassName(getClassName());
 		data.setFunctionName(functionTxt.getText());
-		Expected exp = new Expected(selectedAssertType, expectedTxt.getText());
+		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
 		data.setExpected(exp);
-		data.setAssertType(selectedAssert);
+		data.setAssertion(selectedAssertion);
 		MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Creation confirmation");
 		dialog.setMessage("Are you sure you want to submit unit test?");
@@ -305,6 +306,7 @@ public class CreationWindow {
 				msg.setText("Creation confirmation");
 				msg.setMessage("New unit test was created sucessfully");
 				msg.open();
+				clear();
 
 			} catch (JsonIOException | IOException e) {
 				// TODO Auto-generated catch block
@@ -321,7 +323,9 @@ public class CreationWindow {
 		expectedTxt.setText("");
 		expectedTxt.setVisible(false);
 		expectedTxt.setText("");
-		assertTypesCb.setVisible(false);
+		expectedTypeCb.setVisible(false);
+		
+		data = new UnitTestData();
 
 	}
 
@@ -336,9 +340,9 @@ public class CreationWindow {
 		newParam.setValue(value);
 		data.getParameters().add(newParam);
 
-		parametersTxt.setText("");
-		selectedParamType = "";
-		valueTxt.setText("");
+		newParameterTxt.setText("");
+		selectedNewParamType = "";
+		newParameterValueTxt.setText("");
 
 		paramListLbl.setText(paramListLbl.getText() + ", " + newParam.getName() + " " + newParam.getType() + " "
 				+ newParam.getValue());

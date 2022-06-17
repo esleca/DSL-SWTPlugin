@@ -35,26 +35,84 @@ public class PackageScopeWindow {
 				{
 					"packageName": "package_1",
 					"className": "class1",
-					"functionName": "getEdades",
-					"testName": "getEdades_test1"
-				},
-				{
+					"function": "getEdades",
+					"testName": "getEdades_test1",
+					"assertion":"AreEqual",
+					"expected": {
+						"type": "int",
+						"value": "14"
+					},
+					"parameters": [
+						{
+			                "name": "num1",
+			                "type": "int",
+			                "value": "9"
+			            },
+						{
+			                "name": "num2",
+			                "type": "int",
+			                "value": "2"
+			            },
+						{
+			                "name": "num3",
+			                "type": "int",
+			                "value": "3"
+			            }
+					]
+				}, {
 					"packageName": "package_1",
 					"className": "class1",
-					"functionName": "getEdades",
-					"testName": "getEdades_test2"
-				},
-				{
+					"function": "getEdades",
+					"testName": "getEdades_test1",
+					"assertion":"AreEqual",
+					"expected": {
+						"type": "int",
+						"value": "14"
+					},
+					"parameters": [
+						{
+			                "name": "num1",
+			                "type": "int",
+			                "value": "9"
+			            },
+						{
+			                "name": "num2",
+			                "type": "int",
+			                "value": "2"
+			            },
+						{
+			                "name": "num3",
+			                "type": "int",
+			                "value": "3"
+			            }
+					]
+				}, {
 					"packageName": "package_1",
-					"className": "class2",
-					"functionName": "getTable",
-					"testName": "getTable_test1"
-				},
-				{
-					"packageName": "package_1",
-					"className": "class2",
-					"functionName": "getTable",
-					"testName": "getTable_test2"
+					"className": "class1",
+					"function": "getEdades",
+					"testName": "getEdades_test1",
+					"assertion":"AreEqual",
+					"expected": {
+						"type": "int",
+						"value": "14"
+					},
+					"parameters": [
+						{
+			                "name": "num1",
+			                "type": "int",
+			                "value": "9"
+			            },
+						{
+			                "name": "num2",
+			                "type": "int",
+			                "value": "2"
+			            },
+						{
+			                "name": "num3",
+			                "type": "int",
+			                "value": "3"
+			            }
+					]
 				}
 			]""";
 

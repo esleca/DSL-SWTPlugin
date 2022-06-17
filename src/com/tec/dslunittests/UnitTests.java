@@ -35,10 +35,6 @@ public class UnitTests extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		// Creates window to create individual unit tests
-		// WelcomeWindow welcomeWindow = new WelcomeWindow();
-		// welcomeWindow.render(parent);
-
 		// Creates new composite layer to add widgets
 		layer = new Composite(parent, SWT.NONE);
 		layer.setLayout(new FillLayout(SWT.HORIZONTAL));

@@ -35,18 +35,17 @@ import com.tec.dslunittests.models.UnitTestData;
 
 public class EditionWindow {
 
-	private Text nameTxt, expectedTxt, parametersTxt, valueTxt, assertTxt;
-	private Composite layer;
-	private UnitTestData testData;
+	private List<Parameter> currentParameters;
 	private Group formGroup;
 	private Button saveBtn, cancelBtn, addBtn;
 	private Label label, paramListLbl;
-
-	private String selectedAssert, selectedAssertType, selectedParamType, path;
+	private Text nameTxt, functionTxt, expectedTxt, newParameterTxt, newParameterValueTxt, assertionTxt;
+	private Composite layer;
+	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
 	private Gson gson;
-	private Combo assertTypesCb, assertCb;
-	private List<Parameter> currentParameters;
-
+	private UnitTestData testData;
+	private Combo expectedTypeCb, assertionsCb;
+	
 	/**
 	 * Defines widgets and layout for the unit test edition window
 	 *
@@ -86,15 +85,6 @@ public class EditionWindow {
 		center.setLayout(centerLayout);
 
 		// Displays information about the location of the unit test
-		label = new Label(left, SWT.NONE);
-		label.setText("Package name:");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
-		makeBold(label);
-
-		label = new Label(left, SWT.NONE);
-		label.setText(testData.getPackageName());
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
-
 		label = new Label(left, SWT.NONE);
 		label.setText("Class name:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
@@ -136,13 +126,13 @@ public class EditionWindow {
 		nameTxt.setText(testData.getTestName());
 
 		label = new Label(formGroup, SWT.NONE);
-		label.setText("Parameter:");
+		label.setText("Parameters:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
-		// Define available asserts
-		String[] types = new String[] { "integer", "string", "boolean", "char", "double", "float" };
-
+		// Define available data types
+		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float","long" };
+				
 		// Create a dropdown Combo & Read only
 		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 		typesCb.setItems(types);
@@ -153,24 +143,24 @@ public class EditionWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int idx = typesCb.getSelectionIndex();
-				selectedParamType = typesCb.getItem(idx);
+				selectedNewParamType = typesCb.getItem(idx);
 			}
 		});
 
-		parametersTxt = new Text(formGroup, SWT.BORDER);
-		parametersTxt.setMessage("name");
-		parametersTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		newParameterTxt = new Text(formGroup, SWT.BORDER);
+		newParameterTxt.setMessage("Parameter name");
+		newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
-		valueTxt = new Text(formGroup, SWT.BORDER);
-		valueTxt.setMessage("value");
-		valueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		newParameterValueTxt = new Text(formGroup, SWT.BORDER);
+		newParameterValueTxt.setMessage("Parameter value");
+		newParameterValueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
-		// Clears the data of the form
+		// Adds new parameter to the list
 		addBtn = new Button(formGroup, SWT.PUSH);
 		addBtn.setText("+");
 		addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		addBtn.addListener(SWT.Selection,
-				event -> addParameter(parametersTxt.getText(), selectedParamType, valueTxt.getText()));
+				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText()));
 		
 		//Make all parameters editable
 		currentParameters = testData.getParameters();
@@ -180,37 +170,14 @@ public class EditionWindow {
 			label.setText("");
 			label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 			
-			/*
-			Combo paramType = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-			paramType.setItems(types);
-
-			switch(currentParameters.get(i).getType()) 
-			{
-				case "integer":
-					paramType.select(0);
-				case "int":
-					paramType.select(0);
-				case "string":
-					paramType.select(1);
-				case "boolean":
-					paramType.select(2);
-				case "char":
-					paramType.select(3);
-				case "double":
-					paramType.select(4);
-				case "float":
-					paramType.select(5);
-			} */
-			
 					
 			Combo paramType = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 			paramType.setItems(types);
 			String type = currentParameters.get(i).getType();
-			System.out.println(type);
-			if (type.equals("integer") || type.equals("int")){
+			if ( type.equals("int")){
 				paramType.select(0);
 			}
-			else if(type.equals("string") || type.equals("String"))
+			else if(type.equals("String"))
 			{
 				paramType.select(1);
 			}
@@ -229,7 +196,11 @@ public class EditionWindow {
 			else if(type.equals("float"))
 			{
 				paramType.select(5);
-			}			
+			}
+			else if(type.equals("long"))
+			{
+				paramType.select(6);
+			}
 			
 			
 			paramType.pack();
@@ -247,39 +218,37 @@ public class EditionWindow {
 				}
 			});
 
-			parametersTxt = new Text(formGroup, SWT.BORDER);
-			parametersTxt.setMessage("name");
-			parametersTxt.setText(currentParameters.get(i).getName());
-			parametersTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+			newParameterTxt = new Text(formGroup, SWT.BORDER);
+			newParameterTxt.setText(currentParameters.get(i).getName());
+			newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 			
 			//Listener to detect changes in text
 			ModifyListener paramNameListener = new ModifyListener() {
 			    /** {@inheritDoc} */
 			    public void modifyText(ModifyEvent e) {
 					Parameter param = currentParameters.get(index);
-					param.setName(parametersTxt.getText());
+					param.setName(newParameterTxt.getText());
 					currentParameters.add(index, param);
 			    }
 			};
 
-			parametersTxt.addModifyListener(paramNameListener);
+			newParameterTxt.addModifyListener(paramNameListener);
 
-			valueTxt = new Text(formGroup, SWT.BORDER);
-			valueTxt.setMessage("value");
-			valueTxt.setText(currentParameters.get(i).getValue());
-			valueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+			newParameterValueTxt = new Text(formGroup, SWT.BORDER);
+			newParameterValueTxt.setText(currentParameters.get(i).getValue());
+			newParameterValueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 			
 			//Listener to detect changes in text
 			ModifyListener paramValueListener = new ModifyListener() {
 			    /** {@inheritDoc} */
 			    public void modifyText(ModifyEvent e) {
 					Parameter param = currentParameters.get(index);
-					param.setValue(valueTxt.getText());
+					param.setValue(newParameterValueTxt.getText());
 					currentParameters.add(index, param);
 			    }
 			};
 
-			valueTxt.addModifyListener(paramValueListener);
+			newParameterValueTxt.addModifyListener(paramValueListener);
 			
 			label = new Label(formGroup, SWT.NONE);
 			label.setText("");
@@ -295,39 +264,67 @@ public class EditionWindow {
 		String[] asserts = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOf" };
 
 		// Create a dropdown Combo & Read only
-		assertCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		assertCb.setItems(asserts);
-		assertCb.select(0);
+		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		assertionsCb.setItems(asserts);
+		assertionsCb.select(0);
+		
+		String assertion = testData.getAssertion();
+		if ( assertion.equals("IsNull")){
+			assertionsCb.select(0);
+		}
+		else if(assertion.equals("IsTrue"))
+		{
+			assertionsCb.select(1);
+		}
+		else if(assertion.equals("IsFalse"))
+		{
+			assertionsCb.select(2);
+		}
+		else if(assertion.equals("AreEqual"))
+		{
+			assertionsCb.select(3);
+		}
+		else if(assertion.equals("AreNotEqual"))
+		{
+			assertionsCb.select(4);
+		}
+		else if(assertion.equals("IsInstanceOf"))
+		{
+			assertionsCb.select(5);
+		}
+		
+		
+		assertionsCb.pack();
 
 		// Create a dropdown Combo & Read only
-		assertTypesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		assertTypesCb.setItems(types);
-		assertTypesCb.select(0);
-		assertTypesCb.setVisible(false);
+		expectedTypeCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		expectedTypeCb.setItems(types);
+		expectedTypeCb.select(0);
+		expectedTypeCb.setVisible(false);
 
 		// User select a item in the Combo.
-		assertTypesCb.addSelectionListener(new SelectionAdapter() {
+		expectedTypeCb.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int idx = assertTypesCb.getSelectionIndex();
-				selectedAssertType = assertTypesCb.getItem(idx);
+				int idx = expectedTypeCb.getSelectionIndex();
+				selectedExpectedType = expectedTypeCb.getItem(idx);
 			}
 		});
 
 		// User select a item in the Combo.
-		assertCb.addSelectionListener(new SelectionAdapter() {
+		assertionsCb.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int idx = assertCb.getSelectionIndex();
-				String selected = assertCb.getItem(idx);
+				int idx = assertionsCb.getSelectionIndex();
+				String selected = assertionsCb.getItem(idx);
 				if (selected.equals("IsNull") || selected.equals("IsTrue") || selected.equals("IsFalse")) {
-					selectedAssert = selected;
-					assertTypesCb.setVisible(false);
+					selectedAssertion = selected;
+					expectedTypeCb.setVisible(false);
 					expectedTxt.setVisible(false);
 					expectedTxt.setText("");
 				} else {
-					selectedAssert = selected;
-					assertTypesCb.setVisible(true);
+					selectedAssertion = selected;
+					expectedTypeCb.setVisible(true);
 					expectedTxt.setVisible(true);
 					expectedTxt.setText("");
 
@@ -403,10 +400,11 @@ public class EditionWindow {
 	 * @return
 	 */
 	private void save(Shell parent) {
-		//Expected exp = new Expected(selectedAssertType, expectedTxt.getText());
-		//testData.setExpected(exp);
-		//testData.setAssertType(selectedAssert);
+		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
+		testData.setExpected(exp);
+		testData.setAssertion(selectedAssertion);
 		testData.setParameters(currentParameters);
+		testData.setTestName(nameTxt.getText());
 		MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Edition confirmation");
 		dialog.setMessage("Are you sure you want to submit changes to unit test?");
@@ -447,9 +445,9 @@ public class EditionWindow {
 		newParam.setValue(value);
 		testData.getParameters().add(newParam);
 
-		parametersTxt.setText("");
-		selectedParamType = "";
-		valueTxt.setText("");
+		newParameterTxt.setText("");
+		selectedNewParamType = "";
+		newParameterValueTxt.setText("");
 
 		paramListLbl.setText(paramListLbl.getText() + ", " + newParam.getName() + " " + newParam.getType() + " "
 				+ newParam.getValue());

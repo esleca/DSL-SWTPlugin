@@ -1,6 +1,6 @@
 package com.tec.dslunittests.models;
 
-public class Parameter {
+public class Parameter { //JSON array, null si no hay
 	
 	private String name, type, value;
 

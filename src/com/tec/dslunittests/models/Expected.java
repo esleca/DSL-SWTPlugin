@@ -1,6 +1,6 @@
 package com.tec.dslunittests.models;
 
-public class Expected {
+public class Expected {//Value type
 	
 	private String type, value;
 	

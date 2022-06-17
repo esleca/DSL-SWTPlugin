@@ -5,10 +5,19 @@ import java.util.List;
 
 public class UnitTestData {
 	
-	private String packageName, className, functionName, testName, assertType;
+	private String packageName, className, function, testName, assertion, classPath;
 	private List<Parameter> parameters;
 	private Expected expected;
 	
+	
+	public String getClassPath() {
+		return classPath;
+	}
+
+	public void setClassPath(String classPath) {
+		this.classPath = classPath;
+	}
+
 	public UnitTestData() {
 		parameters = new ArrayList<Parameter>();
 	}
@@ -22,7 +31,7 @@ public class UnitTestData {
 	}
 	
 	public String getFunctionName() {
-		return functionName;
+		return function;
 	}
 	
 	public String getTestName() {
@@ -45,7 +54,7 @@ public class UnitTestData {
 	}
 	
 	public void setFunctionName(String functionName) {
-		this.functionName = functionName;
+		this.function = functionName;
 	}
 	
 	public void setTestName(String testName) {
@@ -60,11 +69,11 @@ public class UnitTestData {
 		this.expected = expected;
 	}
 
-	public String getAssertType() {
-		return assertType;
+	public String getAssertion() {
+		return assertion;
 	}
 
-	public void setAssertType(String assertType) {
-		this.assertType = assertType;
+	public void setAssertion(String assertion) {
+		this.assertion = assertion;
 	}
 }

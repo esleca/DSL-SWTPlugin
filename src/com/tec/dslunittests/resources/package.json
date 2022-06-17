@@ -1,8 +1,9 @@
 {
   "packageName": "package_1",
   "className": "class1",
-  "functionName": "getEdades",
+  "function": "getEdades",
   "testName": "getEdades_test1",
+  "assertion": "AreEqual",
   "parameters": [
     {
       "name": "num1",
@@ -15,13 +16,43 @@
       "value": "2"
     },
     {
-      "name": "num3",
+      "name": "",
       "type": "int",
+      "value": ""
+    },
+    {
+      "name": "",
+      "type": "int",
+      "value": ""
+    },
+    {
+      "name": "",
+      "type": "int",
+      "value": ""
+    },
+    {
+      "name": "",
+      "type": "int",
+      "value": ""
+    },
+    {
+      "name": "",
+      "type": "int",
+      "value": ""
+    },
+    {
+      "name": "num3",
+      "type": "char",
       "value": "3"
+    },
+    {
+      "name": "",
+      "type": "double",
+      "value": ""
     }
   ],
   "expected": {
-    "type": "int",
-    "value": "14"
+    "type": "boolean",
+    "value": "1"
   }
 }

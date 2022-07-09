@@ -36,7 +36,7 @@ public class ClassScopeWindow {
 					"className": "class1",
 					"function": "getEdades",
 					"testName": "getEdades_test1",
-					"assertion":"AreEqual"
+					"assertion":"AreEqual",
 					"expected": {
 						"type": "int",
 						"value": "14"

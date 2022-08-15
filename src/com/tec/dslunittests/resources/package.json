@@ -1,15 +1,7 @@
 {
   "className": "Bitácora",
-  "function": "nnn",
   "assertion": "IsNull",
-  "classPath": "D:\\TEC\\2017\\II semestre\\Algoritmos y estructuras de datos 1\\I Proyecto\\PruebaBD\\Bitácora.txt",
-  "parameters": [
-    {
-      "name": "nn",
-      "value": "00"
-    }
-  ],
-  "expected": {
-    "value": ""
-  }
+  "language": "JAVA",
+  "outputPath": "C:/",
+  "parameters": []
 }

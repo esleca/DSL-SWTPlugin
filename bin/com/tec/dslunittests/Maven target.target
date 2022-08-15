@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="Running Platform">
+	<locations>
+		<location path="${eclipse_home}" type="Profile"/>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="DSL" missingManifest="generate" type="Maven">
+
+			<feature id="dsl.library" label="dsl library" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>avib.coderetriever</groupId>
+					<artifactId>avib.coderetriever.dsl</artifactId>
+					<version>1.0</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="maven.springboot.autoconfigure.library" label="springboot autoconfigure library" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-autoconfigure</artifactId>
+					<version>2.7.0</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="maven.spring.beans.library" label="spring beans library" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+					<version>5.3.21</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="maven.springboot.starter.library" label="springboot starter library" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter</artifactId>
+					<version>2.7.1</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="maven.springframework.context.library" label="springframework context library" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+					<version>5.3.22</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="com.tec.dslunittest.message" label="Message" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>com.tec.dslunittests.plugin.command</groupId>
+					<artifactId>Message</artifactId>
+					<version>1.0</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeSource="true" missingManifest="generate" type="Maven">
+
+			<feature id="org.json.simple.library" label="Json simple" version="1.0.0.qualifier">
+
+   
+
+   
+
+   
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
+			<dependencies>
+				<dependency>
+					<groupId>com.googlecode.json-simple</groupId>
+					<artifactId>json-simple</artifactId>
+					<version>1.1.1</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+	</locations>
+	<environment>
+		<arch>x86_64</arch>
+		<os>win32</os>
+		<ws>win32</ws>
+		<nl>es_CR</nl>
+	</environment>
+</target>

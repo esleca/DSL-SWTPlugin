@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.gson.Gson;
-import com.tec.dslunittests.models.UnitTestData;
+import com.tec.dslunittests.models.UnitTestRequest;
 
 public class PackageScopeWindow {
 
@@ -194,7 +194,7 @@ public class PackageScopeWindow {
 		Gson gson = new Gson();
 
 		// Transforms json data to java object
-		UnitTestData[] UTdata = gson.fromJson(jsonString, UnitTestData[].class);
+		UnitTestRequest[] UTdata = gson.fromJson(jsonString, UnitTestRequest[].class);
 
 		Table table = new Table(bottomLayer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
@@ -219,7 +219,7 @@ public class PackageScopeWindow {
 			item.setText(3, UTdata[i].getTestName());
 
 			// Data of the existent unit tests
-			final UnitTestData editable = UTdata[i];
+			final UnitTestRequest editable = UTdata[i];
 
 			// Set attributes for the button to load edition window
 			editBtn = new Button(table, SWT.PUSH);
@@ -267,7 +267,7 @@ public class PackageScopeWindow {
 	 *               the unit test
 	 * @return
 	 */
-	private void loadEditionWindow(Composite parent, UnitTestData test) {
+	private void loadEditionWindow(Composite parent, UnitTestRequest test) {
 
 		folder = (CTabFolder) parent;
 
@@ -295,7 +295,7 @@ public class PackageScopeWindow {
 	 *              the unit test
 	 * @return
 	 */
-	private void deleteUnitTest(Shell shell, UnitTestData test) {
+	private void deleteUnitTest(Shell shell, UnitTestRequest test) {
 		MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Delete confirmation");
 		dialog.setMessage("Are you sure you want to delete \"" + test.getTestName() + "\" unit test");

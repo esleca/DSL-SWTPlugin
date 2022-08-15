@@ -3,8 +3,10 @@ package com.tec.dslunittests.views;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Writer;
-
+import java.net.Socket;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,12 +25,17 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.dsl.models.valuetypes.*;
+import com.dsl.models.valuetypes.ValueType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
-import com.tec.dslunittests.models.Expected;
-import com.tec.dslunittests.models.Parameter;
-import com.tec.dslunittests.models.UnitTestData;
+import com.tec.dslunittests.models.UnitTestRequest;
+import com.tec.dslunittests.plugin.models.Message;
+import com.tec.dslunittests.resources.Constants;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class CreationWindow {
 
@@ -39,8 +46,9 @@ public class CreationWindow {
 	private Composite layer;
 	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
 	private Gson gson;
-	private UnitTestData data = new UnitTestData();
+	private UnitTestRequest data = new UnitTestRequest();
 	private Combo expectedTypeCb, assertionsCb;
+	private JSONArray paramsArray = new JSONArray();
 
 	public CreationWindow() {
 
@@ -140,7 +148,7 @@ public class CreationWindow {
 		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available data types
-		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float","long" };
+		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float", "long" };
 		typesCb.setItems(types);
 		typesCb.select(0);
 
@@ -177,7 +185,8 @@ public class CreationWindow {
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		String[] assertions = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOfType" };
+		String[] assertions = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual",
+				"IsInstanceOfType" };
 		assertionsCb.setItems(assertions);
 		assertionsCb.setText("Assert");
 
@@ -281,11 +290,48 @@ public class CreationWindow {
 	}
 
 	private void save(Shell parent) {
-		data.setClassPath(path);
 		data.setClassName(getClassName());
-		data.setFunctionName(functionTxt.getText());
-		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
-		data.setExpected(exp);
+		ValueType expectedType = null;
+		
+		if(selectedExpectedType != null) {
+			if ( selectedExpectedType.equals("int")){
+				expectedType = new IntegerType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("String"))
+			{
+				expectedType = new StringType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("boolean"))
+			{
+				expectedType = new BooleanType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("char"))
+			{
+				expectedType = new CharType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("double"))
+			{
+				expectedType = new DoubleType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("float"))
+			{
+				expectedType = new FloatType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+			else if(selectedExpectedType.equals("long"))
+			{
+				expectedType = new LongType();
+				expectedType.setValue(expectedTxt.getText());
+			}
+		}
+		
+		
+		
 		data.setAssertion(selectedAssertion);
 		MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Creation confirmation");
@@ -293,7 +339,7 @@ public class CreationWindow {
 
 		// open dialog and await user selection
 		int returnCode = dialog.open();
-		
+
 		if (returnCode == 32) {
 			try {
 				Writer writer = new FileWriter(
@@ -301,11 +347,29 @@ public class CreationWindow {
 				gson.toJson(data, writer);
 				writer.flush(); // flush data to file <---
 				writer.close(); // close writer <---
+
+				Socket socket = new Socket(Constants.hostName, Constants.portNumber);
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+				// make a bunch of messages to send.
+				//String classPath, String outputPath, String language, String function, String testName,
+                //JSONArray parameters, ValueType expected, String assertion			
 				
-				MessageBox msg = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
-				msg.setText("Creation confirmation");
-				msg.setMessage("New unit test was created sucessfully");
-				msg.open();
+				com.dsl.models.dtos.UnitTestRequest dtosRequest = 
+						new com.dsl.models.dtos.UnitTestRequest(path, 
+								data.getOutputPath(), "JAVA", functionTxt.getText(),
+								data.getTestName(), paramsArray, expectedType,
+								data.getAssertion());
+				Message msg = new Message("CREATE", dtosRequest);
+				objectOutputStream.writeObject(msg);
+				objectOutputStream.close();
+				socket.close();
+
+				MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
+				msgBox.setText("Creation confirmation");
+				msgBox.setMessage("New unit test was created sucessfully");
+				msgBox.open();
 				clear();
 
 			} catch (JsonIOException | IOException e) {
@@ -324,8 +388,8 @@ public class CreationWindow {
 		expectedTxt.setVisible(false);
 		expectedTxt.setText("");
 		expectedTypeCb.setVisible(false);
-		
-		data = new UnitTestData();
+
+		data = new UnitTestRequest();
 
 	}
 
@@ -334,18 +398,18 @@ public class CreationWindow {
 	}
 
 	private void addParameter(String name, String type, String value) {
-		Parameter newParam = new Parameter();
-		newParam.setName(name);
-		newParam.setType(type);
-		newParam.setValue(value);
-		data.getParameters().add(newParam);
+		JSONObject obj = new JSONObject();
+        obj.put("name", name);
+        obj.put("type", type);
+        obj.put("value", value);
+        
+        this.paramsArray.add(obj);
 
 		newParameterTxt.setText("");
 		selectedNewParamType = "";
 		newParameterValueTxt.setText("");
 
-		paramListLbl.setText(paramListLbl.getText() + ", " + newParam.getName() + " " + newParam.getType() + " "
-				+ newParam.getValue());
+		paramListLbl.setText(paramListLbl.getText() + ", " + name + " " + type + " " + value);
 
 		makeBold(paramListLbl);
 		paramListLbl.pack();

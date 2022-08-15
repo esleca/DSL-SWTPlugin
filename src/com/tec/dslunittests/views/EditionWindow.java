@@ -31,7 +31,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.tec.dslunittests.models.Expected;
 import com.tec.dslunittests.models.Parameter;
-import com.tec.dslunittests.models.UnitTestData;
+import com.tec.dslunittests.models.UnitTestRequest;
 
 public class EditionWindow {
 
@@ -43,7 +43,7 @@ public class EditionWindow {
 	private Composite layer;
 	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
 	private Gson gson;
-	private UnitTestData testData;
+	private UnitTestRequest testData;
 	private Combo expectedTypeCb, assertionsCb;
 	
 	/**
@@ -52,7 +52,7 @@ public class EditionWindow {
 	 * @param parent main composite in which the view must be rendered
 	 * @return the composite ready to be displayed
 	 */
-	public Composite render(Composite parent, UnitTestData testData) {
+	public Composite render(Composite parent, UnitTestRequest testData) {
 		this.testData = testData;
 		
 		// Creates new composite layer to add widgets

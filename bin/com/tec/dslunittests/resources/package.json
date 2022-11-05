@@ -1,7 +1,14 @@
 {
-  "className": "Bitácora",
-  "assertion": "IsNull",
+  "className": "MainApp",
+  "function": "getMessage",
+  "testName": "test_name",
+  "assertion": "areEqual",
+  "classPath": "C:\\Users\\karin\\eclipse-workspace\\TestForDsl\\src\\com\\sample\\demo\\MainApp.java",
   "language": "JAVA",
-  "outputPath": "C:/",
-  "parameters": []
+  "outputPath": "C:\\TestPrinter\\JAVA",
+  "parameters": [],
+  "expected": {
+    "type": "String",
+    "value": "hola"
+  }
 }

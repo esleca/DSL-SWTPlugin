@@ -1,6 +1,14 @@
 package com.tec.dslunittests.views;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -16,19 +24,24 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
-
+import com.dsl.models.dtos.PackageTestsRequest;
+import com.dsl.models.dtos.UnitTestResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.reflect.TypeToken;
+import com.tec.dslunittests.models.Message;
+import com.tec.dslunittests.models.Parameter;
 import com.tec.dslunittests.models.UnitTestRequest;
+import com.tec.dslunittests.resources.Constants;
 
 public class PackageScopeWindow {
 
 	private Button editBtn, deleteBtn, newBtn;
 	private Composite layer;
 	private CTabFolder folder;
-
+	private Socket socket;
 	private String path;
-
+	private List<UnitTestResponse> list = null;
 	private String jsonString = """
 			[
 
@@ -211,43 +224,78 @@ public class PackageScopeWindow {
 			table.getColumn(i).pack();
 		}
 
-		for (int i = 0; i <= UTdata.length - 1; i++) {
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, "" + (i + 1));
-			item.setText(1, UTdata[i].getClassName());
-			item.setText(2, UTdata[i].getFunctionName());
-			item.setText(3, UTdata[i].getTestName());
+		try {
+			// Writing request information to json
+			PackageTestsRequest listRequest = new PackageTestsRequest("com.sample.demo");
+			Message msg = new Message("LIST", new Gson().toJson(listRequest).toString(), "PACKAGE");
 
-			// Data of the existent unit tests
-			final UnitTestRequest editable = UTdata[i];
+			socket = new Socket(Constants.hostName, Constants.portNumber);
 
-			// Set attributes for the button to load edition window
-			editBtn = new Button(table, SWT.PUSH);
-			editBtn.setText("Edit");
-			editBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
-			editBtn.addListener(SWT.Selection, event -> loadEditionWindow(parent, editable));
+			DataInputStream din = new DataInputStream(socket.getInputStream());
+			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 
-			TableEditor editor = new TableEditor(table);
-			editor.setEditor(editBtn, item, 4);
+			dout.writeUTF(new Gson().toJson(msg).toString());
+			dout.flush();
 
-			// Set attributes of the editor
-			editor.grabHorizontal = true;
-			editor.minimumHeight = editBtn.getSize().y;
-			editor.minimumWidth = editBtn.getSize().x;
+			Type listType = new TypeToken<ArrayList<UnitTestResponse>>() {
+			}.getType();
+			list = new Gson().fromJson(din.readUTF(), listType);
 
-			// Set attributes for the delete button
-			deleteBtn = new Button(table, SWT.PUSH);
-			deleteBtn.setText("Delete");
-			deleteBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
-			deleteBtn.addListener(SWT.Selection, event -> deleteUnitTest(parent.getShell(), editable));
+			socket.close();
 
-			editor = new TableEditor(table);
-			editor.setEditor(deleteBtn, item, 5);
+			for (int i = 0; i <= list.size() - 1; i++) {
+				UnitTestResponse responseItem = list.get(i);
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, "" + (i + 1));
+				item.setText(1, responseItem.getClassName());
+				item.setText(2, responseItem.getFunctionName());
+				item.setText(3, responseItem.getTestName());
 
-			// Set attributes of the editor
-			editor.grabHorizontal = true;
-			editor.minimumHeight = deleteBtn.getSize().y;
-			editor.minimumWidth = deleteBtn.getSize().x;
+				// Data of the existent unit tests
+				UnitTestRequest editable = new UnitTestRequest();
+				editable.setTestName(responseItem.getTestName());
+				editable.setAssertion(responseItem.getAssertion());
+				editable.setClassName(responseItem.getClassName());
+				editable.setClassPath("");
+				editable.setFunctionName(responseItem.getFunctionName());
+				
+				List<Parameter> params = new ArrayList<Parameter>();
+
+				for (int k = 0; k <= responseItem.getParameters().size() - 1; k++) {
+					params.add(new Parameter(responseItem.getParameters().get(k).getName(), responseItem.getParameters().get(k).getType(), responseItem.getParamValues().get(k)));
+				}
+				editable.setParameters(params);
+
+				// Set attributes for the button to load edition window
+				editBtn = new Button(table, SWT.PUSH);
+				editBtn.setText("Edit");
+				editBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				editBtn.addListener(SWT.Selection, event -> loadEditionWindow(parent, editable));
+
+				TableEditor editor = new TableEditor(table);
+				editor.setEditor(editBtn, item, 4);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = editBtn.getSize().y;
+				editor.minimumWidth = editBtn.getSize().x;
+
+				// Set attributes for the delete button
+				deleteBtn = new Button(table, SWT.PUSH);
+				deleteBtn.setText("Delete");
+				deleteBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				deleteBtn.addListener(SWT.Selection, event -> deleteUnitTest(parent.getShell(), editable));
+
+				editor = new TableEditor(table);
+				editor.setEditor(deleteBtn, item, 5);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = deleteBtn.getSize().y;
+				editor.minimumWidth = deleteBtn.getSize().x;
+			}
+		} catch (JsonIOException | IOException e) {
+			e.printStackTrace();
 		}
 
 		for (int i = 0; i < columns.length; i++) {
@@ -305,7 +353,23 @@ public class PackageScopeWindow {
 
 		if (returnCode == 32) {
 			// Here goes the code to delete unit test
-			System.out.println(returnCode);
+			// Here goes the code to delete unit test
+			Message msg = new Message("DELETE", new Gson().toJson(test).toString(), "");
+			try {
+				socket = new Socket(Constants.hostName, Constants.portNumber);
+				DataInputStream din = new DataInputStream(socket.getInputStream());
+				DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+
+				dout.writeUTF(new Gson().toJson(msg).toString());
+				dout.flush();
+				socket.close();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

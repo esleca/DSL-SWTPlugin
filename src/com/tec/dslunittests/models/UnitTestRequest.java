@@ -1,10 +1,9 @@
 package com.tec.dslunittests.models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitTestRequest implements Serializable {
+public class UnitTestRequest {
 	
 	private String packageName, className, function, testName, assertion, classPath, language, outputPath;
 	private List<Parameter> parameters;

@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import com.tec.dslunittests.models.Message;
 import com.tec.dslunittests.models.UnitTestRequest;
-import com.tec.dslunittests.plugin.models.Message;
 import com.tec.dslunittests.resources.Constants;
 
 public class UnitTests extends ViewPart {
@@ -72,7 +72,7 @@ public class UnitTests extends ViewPart {
 			ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
 			
 			 // make a bunch of messages to send.
-	        Message msg = new Message("CREATE", null);
+	        Message msg = new Message("CREATE", null, "");
 	        objectOutputStream.writeObject(msg);
 	        objectOutputStream.close();			
 	        socket.close();

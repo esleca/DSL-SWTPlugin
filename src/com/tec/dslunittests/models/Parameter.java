@@ -1,12 +1,19 @@
 package com.tec.dslunittests.models;
 
-import java.io.Serializable;
-
-public class Parameter implements Serializable { //JSON array, null si no hay
+public class Parameter{ //JSON array, null si no hay
 	
-	private static final long serialVersionUID = 87777798267757690L;
 	
 	private String name, type, value;
+	
+	public Parameter() {
+		
+	}
+	
+	public Parameter(String name, String type, String value) {
+		this.name = name;
+		this.type = type;
+		this.value = value;
+	}
 
 	public String getName() {
 		return name;

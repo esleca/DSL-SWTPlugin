@@ -1,13 +1,14 @@
 package com.tec.dslunittests.models;
 
-import java.io.Serializable;
-
-public class Expected implements Serializable{//Value type
+public class Expected {//Value type
 	
-	private static final long serialVersionUID = 859999098267757690L;
 	
 	private String type, value;
 	
+	public Expected() {
+		this.type = " ";
+		this.value = " ";
+	}
 	public Expected(String type, String value) {
 		this.type = type;
 		this.value = value;

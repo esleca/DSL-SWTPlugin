@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.resource.FontDescriptor;
@@ -26,6 +27,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.dsl.models.parameters.ParameterScenario;
+import com.dsl.models.unittests.UnitTest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -91,7 +94,7 @@ public class EditionWindow {
 		makeBold(label);
 
 		label = new Label(left, SWT.NONE);
-		label.setText(testData.getClassName());
+		label.setText(testData.getClass().getName());
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		label = new Label(left, SWT.NONE);
@@ -100,7 +103,7 @@ public class EditionWindow {
 		makeBold(label);
 
 		label = new Label(left, SWT.NONE);
-		label.setText(testData.getFunctionName());
+		label.setText(testData.getTestName());
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		// Form to define the parameters of the unit test
@@ -162,8 +165,12 @@ public class EditionWindow {
 		addBtn.addListener(SWT.Selection,
 				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText()));
 		
+		paramListLbl = new Label(formGroup, SWT.NONE);
+		paramListLbl.setText(" "); 
+		
 		//Make all parameters editable
 		currentParameters = testData.getParameters();
+		//currentParameters = null;
 		for(int i = 0; i < currentParameters.size(); i++) {
 			
 			label = new Label(formGroup, SWT.NONE);
@@ -253,6 +260,9 @@ public class EditionWindow {
 			label = new Label(formGroup, SWT.NONE);
 			label.setText("");
 			label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+			
+			paramListLbl.setText(paramListLbl.getText() + ", " + currentParameters.get(i).getName() + " " + currentParameters.get(i).getType() + " "
+					+ currentParameters.get(i).getValue());
 		}
 
 		label = new Label(formGroup, SWT.NONE);
@@ -261,34 +271,34 @@ public class EditionWindow {
 		makeBold(label);
 
 		// Define available asserts
-		String[] asserts = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOf" };
+		String[] asserts = new String[] { "isNull", "isTrue", "isFalse", "areEqual", "areNotEqual", "isInstanceOf" };
 
 		// Create a dropdown Combo & Read only
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 		assertionsCb.setItems(asserts);
-		assertionsCb.select(0);
+		//assertionsCb.select(0);
 		
 		String assertion = testData.getAssertion();
-		if ( assertion.equals("IsNull")){
+		if ( assertion.equals("isNull")){
 			assertionsCb.select(0);
 		}
-		else if(assertion.equals("IsTrue"))
+		else if(assertion.equals("isTrue"))
 		{
 			assertionsCb.select(1);
 		}
-		else if(assertion.equals("IsFalse"))
+		else if(assertion.equals("isFalse"))
 		{
 			assertionsCb.select(2);
 		}
-		else if(assertion.equals("AreEqual"))
+		else if(assertion.equals("areEqual"))
 		{
 			assertionsCb.select(3);
 		}
-		else if(assertion.equals("AreNotEqual"))
+		else if(assertion.equals("areNotEqual"))
 		{
 			assertionsCb.select(4);
 		}
-		else if(assertion.equals("IsInstanceOf"))
+		else if(assertion.equals("isInstanceOf"))
 		{
 			assertionsCb.select(5);
 		}
@@ -317,7 +327,7 @@ public class EditionWindow {
 			public void widgetSelected(SelectionEvent e) {
 				int idx = assertionsCb.getSelectionIndex();
 				String selected = assertionsCb.getItem(idx);
-				if (selected.equals("IsNull") || selected.equals("IsTrue") || selected.equals("IsFalse")) {
+				if (selected.equals("isNull") || selected.equals("isTrue") || selected.equals("isFalse")) {
 					selectedAssertion = selected;
 					expectedTypeCb.setVisible(false);
 					expectedTxt.setVisible(false);
@@ -341,8 +351,7 @@ public class EditionWindow {
 		label.setText("");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 
-		paramListLbl = new Label(formGroup, SWT.NONE);
-		paramListLbl.setText(" ");
+
 		paramListLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 5, 1));
 
 		label = new Label(formGroup, SWT.SEPARATOR | SWT.HORIZONTAL);

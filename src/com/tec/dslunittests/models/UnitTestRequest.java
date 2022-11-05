@@ -3,12 +3,12 @@ package com.tec.dslunittests.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitTestData {
+public class UnitTestRequest {
 	
-	private String packageName, className, function, testName, assertion, classPath;
+	private String packageName, className, function, testName, assertion, classPath, language, outputPath;
 	private List<Parameter> parameters;
 	private Expected expected;
-	
+		
 	
 	public String getClassPath() {
 		return classPath;
@@ -18,8 +18,10 @@ public class UnitTestData {
 		this.classPath = classPath;
 	}
 
-	public UnitTestData() {
+	public UnitTestRequest() {
 		parameters = new ArrayList<Parameter>();
+		language = "JAVA";
+		outputPath = "C:/";
 	}
 	
 	public String getPackageName() {
@@ -75,5 +77,21 @@ public class UnitTestData {
 
 	public void setAssertion(String assertion) {
 		this.assertion = assertion;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getOutputPath() {
+		return outputPath;
+	}
+
+	public void setOutputPath(String outputPath) {
+		this.outputPath = outputPath;
 	}
 }

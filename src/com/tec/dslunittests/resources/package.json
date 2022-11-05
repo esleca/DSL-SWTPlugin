@@ -1,58 +1,14 @@
 {
-  "packageName": "package_1",
-  "className": "class1",
-  "function": "getEdades",
-  "testName": "getEdades_test1",
-  "assertion": "AreEqual",
-  "parameters": [
-    {
-      "name": "num1",
-      "type": "int",
-      "value": "9"
-    },
-    {
-      "name": "num2",
-      "type": "int",
-      "value": "2"
-    },
-    {
-      "name": "",
-      "type": "int",
-      "value": ""
-    },
-    {
-      "name": "",
-      "type": "int",
-      "value": ""
-    },
-    {
-      "name": "",
-      "type": "int",
-      "value": ""
-    },
-    {
-      "name": "",
-      "type": "int",
-      "value": ""
-    },
-    {
-      "name": "",
-      "type": "int",
-      "value": ""
-    },
-    {
-      "name": "num3",
-      "type": "char",
-      "value": "3"
-    },
-    {
-      "name": "",
-      "type": "double",
-      "value": ""
-    }
-  ],
+  "className": "MainApp",
+  "function": "getMessage",
+  "testName": "test_name",
+  "assertion": "areEqual",
+  "classPath": "C:\\Users\\karin\\eclipse-workspace\\TestForDsl\\src\\com\\sample\\demo\\MainApp.java",
+  "language": "JAVA",
+  "outputPath": "C:\\TestPrinter\\JAVA",
+  "parameters": [],
   "expected": {
-    "type": "boolean",
-    "value": "1"
+    "type": "String",
+    "value": "hola"
   }
 }

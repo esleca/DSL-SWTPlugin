@@ -1,8 +1,19 @@
 package com.tec.dslunittests.models;
 
-public class Parameter { //JSON array, null si no hay
+public class Parameter{ //JSON array, null si no hay
+	
 	
 	private String name, type, value;
+	
+	public Parameter() {
+		
+	}
+	
+	public Parameter(String name, String type, String value) {
+		this.name = name;
+		this.type = type;
+		this.value = value;
+	}
 
 	public String getName() {
 		return name;

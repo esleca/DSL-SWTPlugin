@@ -1,10 +1,12 @@
 package com.tec.dslunittests.views;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
-
+import java.net.Socket;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,10 +27,14 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
 import com.tec.dslunittests.models.Expected;
+import com.tec.dslunittests.models.Message;
 import com.tec.dslunittests.models.Parameter;
-import com.tec.dslunittests.models.UnitTestData;
+import com.tec.dslunittests.models.UnitTestRequest;
+import com.tec.dslunittests.resources.Constants;
+
 
 public class CreationWindow {
 
@@ -39,7 +45,7 @@ public class CreationWindow {
 	private Composite layer;
 	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
 	private Gson gson;
-	private UnitTestData data = new UnitTestData();
+	private UnitTestRequest data = new UnitTestRequest();
 	private Combo expectedTypeCb, assertionsCb;
 
 	public CreationWindow() {
@@ -140,7 +146,7 @@ public class CreationWindow {
 		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available data types
-		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float","long" };
+		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float", "long" };
 		typesCb.setItems(types);
 		typesCb.select(0);
 
@@ -177,7 +183,8 @@ public class CreationWindow {
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		String[] assertions = new String[] { "IsNull", "IsTrue", "IsFalse", "AreEqual", "AreNotEqual", "IsInstanceOfType" };
+		String[] assertions = new String[] { "isNull", "isTrue", "isFalse", "areEqual", "areNotEqual",
+				"isInstanceOfType" };
 		assertionsCb.setItems(assertions);
 		assertionsCb.setText("Assert");
 
@@ -204,7 +211,7 @@ public class CreationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				int idx = assertionsCb.getSelectionIndex();
 				String selected = assertionsCb.getItem(idx);
-				if (selected.equals("IsNull") || selected.equals("IsTrue") || selected.equals("IsFalse")) {
+				if (selected.equals("isNull") || selected.equals("isTrue") || selected.equals("isFalse")) {
 					selectedAssertion = selected;
 					expectedTypeCb.setVisible(false);
 					expectedTxt.setVisible(false);
@@ -284,16 +291,19 @@ public class CreationWindow {
 		data.setClassPath(path);
 		data.setClassName(getClassName());
 		data.setFunctionName(functionTxt.getText());
+		data.setTestName(nameTxt.getText());
+		data.setOutputPath("C:\\TestPrinter\\JAVA");		
 		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
 		data.setExpected(exp);
 		data.setAssertion(selectedAssertion);
+
 		MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Creation confirmation");
 		dialog.setMessage("Are you sure you want to submit unit test?");
 
 		// open dialog and await user selection
 		int returnCode = dialog.open();
-		
+
 		if (returnCode == 32) {
 			try {
 				Writer writer = new FileWriter(
@@ -302,10 +312,24 @@ public class CreationWindow {
 				writer.flush(); // flush data to file <---
 				writer.close(); // close writer <---
 				
-				MessageBox msg = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
-				msg.setText("Creation confirmation");
-				msg.setMessage("New unit test was created sucessfully");
-				msg.open();
+				Message msg = new Message("CREATE", new Gson().toJson(data).toString(), "");
+
+				Socket socket = new Socket(Constants.hostName, Constants.portNumber);
+				
+				/*OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());
+				out.write(new Gson().toJson(msg).toString());
+				out.close();*/
+				
+				DataOutputStream dout=new DataOutputStream(socket.getOutputStream());
+				dout.writeUTF(new Gson().toJson(msg).toString());
+				dout.flush();
+				
+				socket.close();
+
+				MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
+				msgBox.setText("Creation confirmation");
+				msgBox.setMessage("New unit test was created sucessfully");
+				msgBox.open();
 				clear();
 
 			} catch (JsonIOException | IOException e) {
@@ -324,13 +348,13 @@ public class CreationWindow {
 		expectedTxt.setVisible(false);
 		expectedTxt.setText("");
 		expectedTypeCb.setVisible(false);
-		
-		data = new UnitTestData();
+
+		data = new UnitTestRequest();
 
 	}
 
 	private String getUTName() {
-		return "Random name";
+		return "test_name";
 	}
 
 	private void addParameter(String name, String type, String value) {
@@ -344,16 +368,13 @@ public class CreationWindow {
 		selectedNewParamType = "";
 		newParameterValueTxt.setText("");
 
-		paramListLbl.setText(paramListLbl.getText() + ", " + newParam.getName() + " " + newParam.getType() + " "
-				+ newParam.getValue());
+		paramListLbl.setText(paramListLbl.getText() + ", " + name + " " + type + " " + value);
 
 		makeBold(paramListLbl);
 		paramListLbl.pack();
 	}
 
 	private String getClassName() {
-		// System.out.println(System.getProperty("file.separator"));
-		// String[] parts = path.split(System.getProperty("file.separator"));
 		File file = new File(path);
 		String str = file.getName();
 		return str.substring(0, str.lastIndexOf('.'));

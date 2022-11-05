@@ -2,8 +2,13 @@ package com.tec.dslunittests.models;
 
 public class Expected {//Value type
 	
+	
 	private String type, value;
 	
+	public Expected() {
+		this.type = " ";
+		this.value = " ";
+	}
 	public Expected(String type, String value) {
 		this.type = type;
 		this.value = value;

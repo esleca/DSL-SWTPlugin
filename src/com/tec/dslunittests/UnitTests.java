@@ -45,12 +45,6 @@ public class UnitTests extends ViewPart {
 		page = new Composite(folder, SWT.NONE);
 		page.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		// Adds new parameter to the list
-		Button addBtn = new Button(page, SWT.PUSH);
-		addBtn.setText("+");
-		addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		addBtn.addListener(SWT.Selection, event -> sendRequest());
-
 		item1.setControl(page);
 
 	}

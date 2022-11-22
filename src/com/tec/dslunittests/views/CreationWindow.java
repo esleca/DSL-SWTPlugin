@@ -1,12 +1,18 @@
 package com.tec.dslunittests.views;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,16 +31,19 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.dsl.models.dtos.ClassFunctionsRequest;
+import com.dsl.models.dtos.ClassFunctionsResponse;
+import com.dsl.models.dtos.UnitTestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
+import com.google.gson.reflect.TypeToken;
 import com.tec.dslunittests.models.Expected;
 import com.tec.dslunittests.models.Message;
 import com.tec.dslunittests.models.Parameter;
 import com.tec.dslunittests.models.UnitTestRequest;
 import com.tec.dslunittests.resources.Constants;
-
 
 public class CreationWindow {
 
@@ -43,7 +52,7 @@ public class CreationWindow {
 	private Label label, paramListLbl;
 	private Text nameTxt, functionTxt, expectedTxt, newParameterTxt, newParameterValueTxt, assertionTxt;
 	private Composite layer;
-	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path;
+	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path, selectedFunction;
 	private Gson gson;
 	private UnitTestRequest data = new UnitTestRequest();
 	private Combo expectedTypeCb, assertionsCb;
@@ -120,9 +129,23 @@ public class CreationWindow {
 		label.setText("");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
 
-		functionTxt = new Text(formGroup, SWT.BORDER);
-		functionTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
-		functionTxt.setText("");
+		// Create a dropdown Combo & Read only
+		Combo functionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		functionsCb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+
+		// Define available data types
+		String[] functions = getFunctions();
+		functionsCb.setItems(functions);
+		functionsCb.select(0);
+
+		// User select a item in the Combo.
+		functionsCb.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int idx = functionsCb.getSelectionIndex();
+				selectedFunction = functionsCb.getItem(idx);
+			}
+		});
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Test name:");
@@ -290,9 +313,9 @@ public class CreationWindow {
 	private void save(Shell parent) {
 		data.setClassPath(path);
 		data.setClassName(getClassName());
-		data.setFunctionName(functionTxt.getText());
+		data.setFunctionName(selectedFunction);
 		data.setTestName(nameTxt.getText());
-		data.setOutputPath("C:\\TestPrinter\\JAVA");		
+		data.setOutputPath("C:\\TestPrinter\\JAVA");
 		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
 		data.setExpected(exp);
 		data.setAssertion(selectedAssertion);
@@ -311,19 +334,20 @@ public class CreationWindow {
 				gson.toJson(data, writer);
 				writer.flush(); // flush data to file <---
 				writer.close(); // close writer <---
-				
+
 				Message msg = new Message("CREATE", new Gson().toJson(data).toString(), "");
 
 				Socket socket = new Socket(Constants.hostName, Constants.portNumber);
-				
-				/*OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());
-				out.write(new Gson().toJson(msg).toString());
-				out.close();*/
-				
-				DataOutputStream dout=new DataOutputStream(socket.getOutputStream());
+
+				/*
+				 * OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());
+				 * out.write(new Gson().toJson(msg).toString()); out.close();
+				 */
+
+				DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 				dout.writeUTF(new Gson().toJson(msg).toString());
 				dout.flush();
-				
+
 				socket.close();
 
 				MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
@@ -341,16 +365,12 @@ public class CreationWindow {
 
 	private void clear() {
 		nameTxt.setText(getUTName());
-		functionTxt.setText("");
-
 		paramListLbl.setText("");
 		expectedTxt.setText("");
 		expectedTxt.setVisible(false);
 		expectedTxt.setText("");
 		expectedTypeCb.setVisible(false);
-
 		data = new UnitTestRequest();
-
 	}
 
 	private String getUTName() {
@@ -378,5 +398,37 @@ public class CreationWindow {
 		File file = new File(path);
 		String str = file.getName();
 		return str.substring(0, str.lastIndexOf('.'));
+	}
+
+	private String[] getFunctions() {
+		ClassFunctionsRequest classRequest = new ClassFunctionsRequest(path, "JAVA");
+		Message msg = new Message("LIST", new Gson().toJson(classRequest).toString(), "FUNCTION");
+		try {
+			Socket socket = new Socket(Constants.hostName, Constants.portNumber);
+			DataInputStream din = new DataInputStream(socket.getInputStream());
+			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+
+			dout.writeUTF(new Gson().toJson(msg).toString());
+			dout.flush();
+			Type listType = new TypeToken<ArrayList<ClassFunctionsResponse>>() {
+			}.getType();
+			List<ClassFunctionsResponse> list = new Gson().fromJson(din.readUTF(), listType);
+			socket.close();
+			
+			String[] functions = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				functions[i] = list.get(i).getName();
+			}
+			System.out.print(list.get(0).getName());
+			return functions;
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 }

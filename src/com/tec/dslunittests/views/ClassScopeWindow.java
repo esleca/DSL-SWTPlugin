@@ -2,6 +2,8 @@ package com.tec.dslunittests.views;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.lang.reflect.Type;
 
 import org.eclipse.swt.SWT;
@@ -46,12 +49,13 @@ import com.tec.dslunittests.resources.Constants;
 
 public class ClassScopeWindow {
 
-	private Button editBtn, deleteBtn, newBtn;
+	private Button editBtn, deleteBtn, newBtn, refreshBtn;
 	private Composite layer;
 	private CTabFolder folder;
 	private String path;
 	private List<UnitTestResponse> list = null;
 	private Socket socket;
+	private String className, packageName;
 
 	public ClassScopeWindow() {
 
@@ -59,6 +63,13 @@ public class ClassScopeWindow {
 
 	public ClassScopeWindow(String path) {
 		this.path = path;
+		this.className = getClassName(this.path);
+		try {
+			this.packageName = getPackageName(this.path);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -121,6 +132,21 @@ public class ClassScopeWindow {
 			centerData.widthHint = size.x - leftData.widthHint - rightData.widthHint;
 
 		});
+		// Saves the unit test information
+		refreshBtn = new Button(left, SWT.PUSH);
+		refreshBtn.setText("Refresh");
+		refreshBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		refreshBtn.addListener(SWT.Selection, event -> {
+			try {
+				refreshList();
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 
 		// Saves the unit test information
 		newBtn = new Button(right, SWT.PUSH);
@@ -146,23 +172,8 @@ public class ClassScopeWindow {
 		}
 
 		try {
-			// Writing request information to json
-			ClassTestsRequest listRequest = new ClassTestsRequest("com.sample.demo", "MainApp");
-			Message msg = new Message("LIST", new Gson().toJson(listRequest).toString(), "CLASS");
 
-			socket = new Socket(Constants.hostName, Constants.portNumber);
-
-			DataInputStream din = new DataInputStream(socket.getInputStream());
-			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
-
-			dout.writeUTF(new Gson().toJson(msg).toString());
-			dout.flush();
-
-			Type listType = new TypeToken<ArrayList<UnitTestResponse>>(){}.getType();
-			list = new Gson().fromJson(din.readUTF(), listType);
-
-
-			socket.close();
+			list = getClassUnitTests(this.packageName, this.className);
 
 			for (int i = 0; i <= list.size() - 1; i++) {
 				UnitTestResponse responseItem = list.get(i);
@@ -170,7 +181,7 @@ public class ClassScopeWindow {
 				item.setText(0, "" + (i + 1));
 				item.setText(1, responseItem.getClassName());
 				item.setText(2, responseItem.getTestName());
-				
+
 				// Data of the existent unit tests
 				UnitTestRequest editable = new UnitTestRequest();
 				editable.setTestName(responseItem.getTestName());
@@ -178,13 +189,15 @@ public class ClassScopeWindow {
 				editable.setClassName(responseItem.getClassName());
 				editable.setClassPath("");
 				editable.setFunctionName(responseItem.getFunctionName());
-				
+
 				List<Parameter> params = new ArrayList<Parameter>();
 
 				String parameters = "";
 				for (int k = 0; k <= responseItem.getParameters().size() - 1; k++) {
 					parameters += responseItem.getParameters().get(k).getName() + " - ";
-					params.add(new Parameter(responseItem.getParameters().get(k).getName(), responseItem.getParameters().get(k).getType(), responseItem.getParamValues().get(k)));
+					params.add(new Parameter(responseItem.getParameters().get(k).getName(),
+							responseItem.getParameters().get(k).getType(),
+							responseItem.getParamValues().get(k).toString()));
 				}
 				item.setText(3, parameters);
 				editable.setParameters(params);
@@ -192,11 +205,8 @@ public class ClassScopeWindow {
 				String expected = responseItem.getAssertion();
 				item.setText(4, expected);
 
-
-				
-				Expected exp = new Expected(responseItem.getExpectedType(),responseItem.getExpectedValue());
+				Expected exp = new Expected(responseItem.getExpectedType(), responseItem.getExpectedValue().toString());
 				editable.setExpected(exp);
-				
 
 				// Set attributes for the button to load edition window
 				editBtn = new Button(table, SWT.PUSH);
@@ -275,8 +285,7 @@ public class ClassScopeWindow {
 	private void deleteUnitTest(Shell shell, UnitTestRequest editable) {
 		MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Delete confirmation");
-		dialog.setMessage(
-				"Are you sure you want to delete \"" + editable.getTestName() + "\" unit test");
+		dialog.setMessage("Are you sure you want to delete \"" + editable.getTestName() + "\" unit test");
 
 		// open dialog and await user selection
 		int returnCode = dialog.open();
@@ -299,7 +308,6 @@ public class ClassScopeWindow {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 
 		}
 	}
@@ -328,6 +336,56 @@ public class ClassScopeWindow {
 
 		// Refreshes view
 		parent.requestLayout();
+	}
+
+	private List<UnitTestResponse> getClassUnitTests(String packageName, String className)
+			throws UnknownHostException, IOException {
+		// Writing request information to json
+		ClassTestsRequest listRequest = new ClassTestsRequest(packageName, className);
+		Message msg = new Message("LIST", new Gson().toJson(listRequest).toString(), "CLASS");
+
+		socket = new Socket(Constants.hostName, Constants.portNumber);
+
+		DataInputStream din = new DataInputStream(socket.getInputStream());
+		DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+
+		dout.writeUTF(new Gson().toJson(msg).toString());
+		dout.flush();
+
+		Type listType = new TypeToken<ArrayList<UnitTestResponse>>() {
+		}.getType();
+		List<UnitTestResponse> list = new Gson().fromJson(din.readUTF(), listType);
+		socket.close();
+		return list;
+	}
+	
+	private void refreshList() throws UnknownHostException, IOException {
+		list = getClassUnitTests(this.packageName, this.className);
+		layer.requestLayout();
+	}
+	
+	private String getClassName(String path) {
+		File file = new File(path);
+		String str = file.getName();
+		return str.substring(0, str.lastIndexOf('.'));
+	}
+	
+	private String getPackageName(String path) throws FileNotFoundException {
+		File file = new File(path);
+		Scanner scanner = new Scanner(file);
+		String currentLine = null;
+
+		while(scanner.hasNext())
+		{
+			currentLine = scanner.next();
+		    if(currentLine.indexOf("package") == 0)
+		    {
+		    	String next = scanner.next();
+		    	String[] arrOfStr = next.split(";", 2);
+		    	return arrOfStr[0];
+		    }
+		}
+		return currentLine;
 	}
 
 }

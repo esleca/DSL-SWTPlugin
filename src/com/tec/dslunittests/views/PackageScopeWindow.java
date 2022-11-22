@@ -42,92 +42,6 @@ public class PackageScopeWindow {
 	private Socket socket;
 	private String path;
 	private List<UnitTestResponse> list = null;
-	private String jsonString = """
-			[
-
-				{
-					"packageName": "package_1",
-					"className": "class1",
-					"function": "getEdades",
-					"testName": "getEdades_test1",
-					"assertion":"AreEqual",
-					"expected": {
-						"type": "int",
-						"value": "14"
-					},
-					"parameters": [
-						{
-			                "name": "num1",
-			                "type": "int",
-			                "value": "9"
-			            },
-						{
-			                "name": "num2",
-			                "type": "int",
-			                "value": "2"
-			            },
-						{
-			                "name": "num3",
-			                "type": "int",
-			                "value": "3"
-			            }
-					]
-				}, {
-					"packageName": "package_1",
-					"className": "class1",
-					"function": "getEdades",
-					"testName": "getEdades_test1",
-					"assertion":"AreEqual",
-					"expected": {
-						"type": "int",
-						"value": "14"
-					},
-					"parameters": [
-						{
-			                "name": "num1",
-			                "type": "int",
-			                "value": "9"
-			            },
-						{
-			                "name": "num2",
-			                "type": "int",
-			                "value": "2"
-			            },
-						{
-			                "name": "num3",
-			                "type": "int",
-			                "value": "3"
-			            }
-					]
-				}, {
-					"packageName": "package_1",
-					"className": "class1",
-					"function": "getEdades",
-					"testName": "getEdades_test1",
-					"assertion":"AreEqual",
-					"expected": {
-						"type": "int",
-						"value": "14"
-					},
-					"parameters": [
-						{
-			                "name": "num1",
-			                "type": "int",
-			                "value": "9"
-			            },
-						{
-			                "name": "num2",
-			                "type": "int",
-			                "value": "2"
-			            },
-						{
-			                "name": "num3",
-			                "type": "int",
-			                "value": "3"
-			            }
-					]
-				}
-			]""";
 
 	public PackageScopeWindow(String path) {
 		this.path = path;
@@ -206,9 +120,6 @@ public class PackageScopeWindow {
 
 		Gson gson = new Gson();
 
-		// Transforms json data to java object
-		UnitTestRequest[] UTdata = gson.fromJson(jsonString, UnitTestRequest[].class);
-
 		Table table = new Table(bottomLayer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -262,7 +173,7 @@ public class PackageScopeWindow {
 				List<Parameter> params = new ArrayList<Parameter>();
 
 				for (int k = 0; k <= responseItem.getParameters().size() - 1; k++) {
-					params.add(new Parameter(responseItem.getParameters().get(k).getName(), responseItem.getParameters().get(k).getType(), responseItem.getParamValues().get(k)));
+					params.add(new Parameter(responseItem.getParameters().get(k).getName(), responseItem.getParameters().get(k).getType(), responseItem.getParamValues().get(k).toString()));
 				}
 				editable.setParameters(params);
 

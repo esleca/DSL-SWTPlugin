@@ -2,12 +2,15 @@ package com.tec.dslunittests.views;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -40,11 +43,17 @@ public class PackageScopeWindow {
 	private Composite layer;
 	private CTabFolder folder;
 	private Socket socket;
-	private String path;
+	private String path, packageName;
 	private List<UnitTestResponse> list = null;
 
 	public PackageScopeWindow(String path) {
 		this.path = path;
+		try {
+			this.packageName = getPackageName(this.path);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public PackageScopeWindow() {
@@ -137,7 +146,7 @@ public class PackageScopeWindow {
 
 		try {
 			// Writing request information to json
-			PackageTestsRequest listRequest = new PackageTestsRequest("com.sample.demo");
+			PackageTestsRequest listRequest = new PackageTestsRequest(this.packageName);
 			Message msg = new Message("LIST", new Gson().toJson(listRequest).toString(), "PACKAGE");
 
 			socket = new Socket(Constants.hostName, Constants.portNumber);
@@ -302,5 +311,24 @@ public class PackageScopeWindow {
 		// Refreshes view
 		parent.requestLayout();
 	}
+	
+	private String getPackageName(String path) throws FileNotFoundException {
+		File file = new File(path);
+		Scanner scanner = new Scanner(file);
+		String currentLine = null;
+
+		while(scanner.hasNext())
+		{
+			currentLine = scanner.next();
+		    if(currentLine.indexOf("package") == 0)
+		    {
+		    	String next = scanner.next();
+		    	String[] arrOfStr = next.split(";", 2);
+		    	return arrOfStr[0];
+		    }
+		}
+		return currentLine;
+	}
+
 
 }

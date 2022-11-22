@@ -59,21 +59,4 @@ public class UnitTests extends ViewPart {
 		return folder;
 	}
 
-	public void sendRequest() {
-		try {
-			Socket socket = new Socket(Constants.hostName, Constants.portNumber);
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-			ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-			
-			 // make a bunch of messages to send.
-	        Message msg = new Message("CREATE", null, "");
-	        objectOutputStream.writeObject(msg);
-	        objectOutputStream.close();			
-	        socket.close();
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
 }

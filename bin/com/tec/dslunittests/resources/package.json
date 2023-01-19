@@ -1,25 +1,23 @@
 {
   "className": "ClientRepository",
   "function": "isUserAuthorized",
-  "testName": "test_name31",
-  "assertion": "isFalse",
-  "classPath": "C:\\Users\\karin\\eclipse-workspace\\Console_ATM\\src\\com\\bank\\atm\\dal\\ClientRepository.java",
+  "testName": "test_auth2",
+  "classPath": "",
   "language": "JAVA",
-  "outputPath": "C:\\TestPrinter\\JAVA",
+  "outputPath": "C:/",
   "parameters": [
     {
       "name": "account",
       "type": "int",
-      "value": "1234"
+      "value": "1"
     },
     {
       "name": "pin",
       "type": "int",
-      "value": "32342"
+      "value": "123"
     }
   ],
   "expected": {
-    "type": "boolean",
-    "value": "false"
+    "value": ""
   }
 }

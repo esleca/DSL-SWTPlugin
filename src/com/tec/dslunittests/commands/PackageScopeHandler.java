@@ -86,6 +86,7 @@ public class PackageScopeHandler implements IHandler {
 			this.fileName = this.theResource.getName();
 			
 			System.out.println(theResource.getFullPath());
+			System.out.println(theResource.getLocation());
 			System.out.println("Path: " + workspaceName + " " + projectName + " " + fileName);
 			System.out.println(workspaceName +  theResource.getFullPath().toOSString());
 		}
@@ -108,7 +109,8 @@ public class PackageScopeHandler implements IHandler {
 			folder.setSelection(idx + 1);
 
 			// Creates window to show package unit tests
-			PackageScopeWindow packageWindow = new PackageScopeWindow(workspaceName +  theResource.getFullPath().toOSString());
+			//PackageScopeWindow packageWindow = new PackageScopeWindow(workspaceName +  theResource.getFullPath().toOSString());
+			PackageScopeWindow packageWindow = new PackageScopeWindow(theResource.getLocation().toString());
 			// Renders content in new tab
 			item.setControl(packageWindow.render(folder));
 

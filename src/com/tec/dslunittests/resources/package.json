@@ -1,25 +1,25 @@
 {
-  "className": "MainApp",
-  "function": "sum",
-  "testName": "test_namenn",
-  "assertion": "areEqual",
-  "classPath": "C:\\Users\\karin\\eclipse-workspace\\TestForDsl\\src\\com\\sample\\demo\\MainApp.java",
+  "className": "ClientRepository",
+  "function": "isUserAuthorized",
+  "testName": "test_name31",
+  "assertion": "isFalse",
+  "classPath": "C:\\Users\\karin\\eclipse-workspace\\Console_ATM\\src\\com\\bank\\atm\\dal\\ClientRepository.java",
   "language": "JAVA",
   "outputPath": "C:\\TestPrinter\\JAVA",
   "parameters": [
     {
-      "name": "num1",
+      "name": "account",
       "type": "int",
-      "value": "2"
+      "value": "1234"
     },
     {
-      "name": "num2",
+      "name": "pin",
       "type": "int",
-      "value": "2"
+      "value": "32342"
     }
   ],
   "expected": {
-    "type": "int",
-    "value": "4"
+    "type": "boolean",
+    "value": "false"
   }
 }

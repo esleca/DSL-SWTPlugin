@@ -49,7 +49,7 @@ import com.tec.dslunittests.resources.Constants;
 
 public class ClassScopeWindow {
 
-	private Button editBtn, deleteBtn, newBtn, refreshBtn;
+	private Button newBtn, refreshBtn;
 	private Composite layer;
 	private CTabFolder folder;
 	private String path;
@@ -136,17 +136,7 @@ public class ClassScopeWindow {
 		refreshBtn = new Button(left, SWT.PUSH);
 		refreshBtn.setText("Refresh");
 		refreshBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		refreshBtn.addListener(SWT.Selection, event -> {
-			try {
-				refreshList();
-			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		});
+	
 
 		// Saves the unit test information
 		newBtn = new Button(right, SWT.PUSH);
@@ -155,15 +145,21 @@ public class ClassScopeWindow {
 		newBtn.addListener(SWT.Selection, event -> loadCreationWindow(parent));
 
 		Gson gson = new Gson();
-
-		Table table = new Table(bottomLayer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
+		
+		Table table = new Table(layer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.heightHint = 200;
 		table.setLayoutData(data);
-
-		String[] columns = { "#", "Function", "Unit test", "Parameters", "Assertion", " ", " " };
+		
+		loadTestList(bottomLayer, parent, table);
+		
+		refreshBtn.addListener(SWT.Selection, event -> {
+			loadTestList(bottomLayer, parent, table);
+			});
+		
+		/*String[] columns = { "#", "Function", "Unit test", "Parameters", "Assertion", " ", " " };
 
 		for (int i = 0; i < columns.length; i++) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
@@ -209,7 +205,7 @@ public class ClassScopeWindow {
 				editable.setExpected(exp);
 
 				// Set attributes for the button to load edition window
-				editBtn = new Button(table, SWT.PUSH);
+				Button editBtn = new Button(table, SWT.PUSH);
 				editBtn.setText("Edit");
 				editBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
 				editBtn.addListener(SWT.Selection, event -> loadEditionWindow(parent, editable));
@@ -223,7 +219,7 @@ public class ClassScopeWindow {
 				editor.minimumWidth = editBtn.getSize().x;
 
 				// Set attributes for the delete button
-				deleteBtn = new Button(table, SWT.PUSH);
+				Button deleteBtn = new Button(table, SWT.PUSH);
 				deleteBtn.setText("Delete");
 				deleteBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
 				deleteBtn.addListener(SWT.Selection, event -> deleteUnitTest(parent.getShell(), editable));
@@ -242,7 +238,7 @@ public class ClassScopeWindow {
 
 		for (int i = 0; i < columns.length; i++) {
 			table.getColumn(i).pack();
-		}
+		}*/
 
 		return layer;
 	}
@@ -358,9 +354,94 @@ public class ClassScopeWindow {
 		socket.close();
 		return list;
 	}
+
 	
-	private void refreshList() throws UnknownHostException, IOException {
-		list = getClassUnitTests(this.packageName, this.className);
+	private void loadTestList(Composite layer, Composite parent, Table table) {
+		
+		table.removeAll();
+
+		String[] columns = { "#", "Function", "Unit test", "Parameters", "Assertion", " ", " " };
+
+		for (int i = 0; i < columns.length; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(columns[i]);
+			table.getColumn(i).pack();
+		}
+
+		try {
+
+			list = getClassUnitTests(this.packageName, this.className);
+
+			for (int i = 0; i <= list.size() - 1; i++) {
+				UnitTestResponse responseItem = list.get(i);
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, "" + (i + 1));
+				item.setText(1, responseItem.getClassName());
+				item.setText(2, responseItem.getTestName());
+
+				// Data of the existent unit tests
+				UnitTestRequest editable = new UnitTestRequest();
+				editable.setTestName(responseItem.getTestName());
+				editable.setAssertion(responseItem.getAssertion());
+				editable.setClassName(responseItem.getClassName());
+				editable.setClassPath("");
+				editable.setFunctionName(responseItem.getFunctionName());
+
+				List<Parameter> params = new ArrayList<Parameter>();
+
+				String parameters = "";
+				for (int k = 0; k <= responseItem.getParameters().size() - 1; k++) {
+					parameters += responseItem.getParameters().get(k).getName() + " - ";
+					params.add(new Parameter(responseItem.getParameters().get(k).getName(),
+							responseItem.getParameters().get(k).getType(),
+							responseItem.getParamValues().get(k).toString()));
+				}
+				item.setText(3, parameters);
+				editable.setParameters(params);
+
+				String expected = responseItem.getAssertion();
+				item.setText(4, expected);
+
+				Expected exp = new Expected(responseItem.getExpectedType(), responseItem.getExpectedValue().toString());
+				editable.setExpected(exp);
+
+				// Set attributes for the button to load edition window
+				Button editBtn = new Button(table, SWT.PUSH);
+				editBtn.setText("Edit");
+				editBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				editBtn.addListener(SWT.Selection, event -> loadEditionWindow(parent, editable));
+
+				TableEditor editor = new TableEditor(table);
+				editor.setEditor(editBtn, item, 5);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = editBtn.getSize().y;
+				editor.minimumWidth = editBtn.getSize().x;
+
+				// Set attributes for the delete button
+				Button deleteBtn = new Button(table, SWT.PUSH);
+				deleteBtn.setText("Delete");
+				deleteBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				deleteBtn.addListener(SWT.Selection, event -> deleteUnitTest(parent.getShell(), editable));
+
+				editor = new TableEditor(table);
+				editor.setEditor(deleteBtn, item, 6);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = deleteBtn.getSize().y;
+				editor.minimumWidth = deleteBtn.getSize().x;
+			}
+		} catch (JsonIOException | IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < columns.length; i++) {
+			table.getColumn(i).pack();
+		}
+		
+		// Refreshes view
 		layer.requestLayout();
 	}
 	

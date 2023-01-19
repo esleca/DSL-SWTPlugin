@@ -195,7 +195,7 @@ public class CreationWindow {
 		addBtn.setText("+");
 		addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		addBtn.addListener(SWT.Selection,
-				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText()));
+				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText(), layer.getShell()));
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Expected:");
@@ -239,6 +239,8 @@ public class CreationWindow {
 					expectedTypeCb.setVisible(false);
 					expectedTxt.setVisible(false);
 					expectedTxt.setText("");
+					selectedExpectedType = "boolean";
+					expectedTxt.setText("false");
 				} else {
 					selectedAssertion = selected;
 					expectedTypeCb.setVisible(true);
@@ -311,56 +313,59 @@ public class CreationWindow {
 	}
 
 	private void save(Shell parent) {
-		data.setClassPath(path);
-		data.setClassName(getClassName());
-		data.setFunctionName(selectedFunction);
-		data.setTestName(nameTxt.getText());
-		data.setOutputPath("C:\\TestPrinter\\JAVA");
-		Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
-		data.setExpected(exp);
-		data.setAssertion(selectedAssertion);
+		if(selectedFunction == null || selectedFunction == "") {
+			MessageBox msgBox = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
+			msgBox.setText("Missing information");
+			msgBox.setMessage("Select function name");
+			msgBox.open();
+		}else {
+			data.setClassPath(path);
+			data.setClassName(getClassName());
+			data.setFunctionName(selectedFunction);
+			data.setTestName(nameTxt.getText());
+			data.setOutputPath("C:\\TestPrinter\\JAVA");
+			Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
+			data.setExpected(exp);
+			data.setAssertion(selectedAssertion);
 
-		MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-		dialog.setText("Creation confirmation");
-		dialog.setMessage("Are you sure you want to submit unit test?");
+			MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+			dialog.setText("Creation confirmation");
+			dialog.setMessage("Are you sure you want to submit unit test?");
 
-		// open dialog and await user selection
-		int returnCode = dialog.open();
+			// open dialog and await user selection
+			int returnCode = dialog.open();
 
-		if (returnCode == 32) {
-			try {
-				Writer writer = new FileWriter(
-						"D:\\TEC\\2022\\I semestre\\Asistencia\\DSL-SWTPlugin\\src\\com\\tec\\dslunittests\\resources\\package.json");
-				gson.toJson(data, writer);
-				writer.flush(); // flush data to file <---
-				writer.close(); // close writer <---
+			if (returnCode == 32) {
+				try {
+					Writer writer = new FileWriter(
+							"D:\\TEC\\2022\\I semestre\\Asistencia\\DSL-SWTPlugin\\src\\com\\tec\\dslunittests\\resources\\package.json");
+					gson.toJson(data, writer);
+					writer.flush(); // flush data to file <---
+					writer.close(); // close writer <---
 
-				Message msg = new Message("CREATE", new Gson().toJson(data).toString(), "");
+					Message msg = new Message("CREATE", new Gson().toJson(data).toString(), "");
 
-				Socket socket = new Socket(Constants.hostName, Constants.portNumber);
+					Socket socket = new Socket(Constants.hostName, Constants.portNumber);
 
-				/*
-				 * OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());
-				 * out.write(new Gson().toJson(msg).toString()); out.close();
-				 */
+					DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+					dout.writeUTF(new Gson().toJson(msg).toString());
+					dout.flush();
 
-				DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
-				dout.writeUTF(new Gson().toJson(msg).toString());
-				dout.flush();
+					socket.close();
 
-				socket.close();
+					MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
+					msgBox.setText("Creation confirmation");
+					msgBox.setMessage("New unit test was created sucessfully");
+					msgBox.open();
+					clear();
 
-				MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
-				msgBox.setText("Creation confirmation");
-				msgBox.setMessage("New unit test was created sucessfully");
-				msgBox.open();
-				clear();
-
-			} catch (JsonIOException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				} catch (JsonIOException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
+		
 	}
 
 	private void clear() {
@@ -377,7 +382,13 @@ public class CreationWindow {
 		return "test_name";
 	}
 
-	private void addParameter(String name, String type, String value) {
+	private void addParameter(String name, String type, String value, Shell parent) {
+		if(type == "" || selectedNewParamType == null || type == null) {
+			MessageBox msgBox = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
+			msgBox.setText("Missing information");
+			msgBox.setMessage("Select parameter type");
+			msgBox.open();
+		}else {
 		Parameter newParam = new Parameter();
 		newParam.setName(name);
 		newParam.setType(type);
@@ -392,6 +403,7 @@ public class CreationWindow {
 
 		makeBold(paramListLbl);
 		paramListLbl.pack();
+		}
 	}
 
 	private String getClassName() {

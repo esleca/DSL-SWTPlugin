@@ -27,11 +27,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+
+import com.dsl.models.dtos.ClassTestsRequest;
 import com.dsl.models.dtos.PackageTestsRequest;
 import com.dsl.models.dtos.UnitTestResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
+import com.tec.dslunittests.models.Expected;
 import com.tec.dslunittests.models.Message;
 import com.tec.dslunittests.models.Parameter;
 import com.tec.dslunittests.models.UnitTestRequest;
@@ -135,7 +138,7 @@ public class PackageScopeWindow {
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.heightHint = 200;
 		table.setLayoutData(data);
-
+/*
 		String[] columns = { "#", "Class", "Function", "Unit test", "", "" };
 
 		for (int i = 0; i < columns.length; i++) {
@@ -220,7 +223,7 @@ public class PackageScopeWindow {
 
 		for (int i = 0; i < columns.length; i++) {
 			table.getColumn(i).pack();
-		}
+		}*/
 
 		topLayer.pack();
 		bottomLayer.pack();
@@ -264,6 +267,7 @@ public class PackageScopeWindow {
 	 * @return
 	 */
 	private void deleteUnitTest(Shell shell, UnitTestRequest test) {
+
 		MessageBox dialog = new MessageBox(shell, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 		dialog.setText("Delete confirmation");
 		dialog.setMessage("Are you sure you want to delete \"" + test.getTestName() + "\" unit test");
@@ -293,6 +297,116 @@ public class PackageScopeWindow {
 		}
 	}
 
+	private List<UnitTestResponse> getPackageUnitTests(String packageName)
+			throws UnknownHostException, IOException {
+		// Writing request information to json
+		PackageTestsRequest listRequest = new PackageTestsRequest(packageName);
+		Message msg = new Message("LIST", new Gson().toJson(listRequest).toString(), "PACKAGE");
+
+		socket = new Socket(Constants.hostName, Constants.portNumber);
+
+		DataInputStream din = new DataInputStream(socket.getInputStream());
+		DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+
+		dout.writeUTF(new Gson().toJson(msg).toString());
+		dout.flush();
+
+		Type listType = new TypeToken<ArrayList<UnitTestResponse>>() {
+		}.getType();
+		List<UnitTestResponse> list = new Gson().fromJson(din.readUTF(), listType);
+		socket.close();
+		return list;
+	}
+	
+private void loadTestList(Composite layer, Composite parent, Table table) {
+		
+		table.removeAll();
+		
+		String[] columns = { "#", "Class", "Function", "Unit test", "", "" };
+
+		for (int i = 0; i < columns.length; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(columns[i]);
+			table.getColumn(i).pack();
+		}
+
+		try {
+
+			list = getPackageUnitTests(this.packageName);
+
+			for (int i = 0; i <= list.size() - 1; i++) {
+				UnitTestResponse responseItem = list.get(i);
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, "" + (i + 1));
+				item.setText(1, responseItem.getClassName());
+				item.setText(2, responseItem.getTestName());
+
+				// Data of the existent unit tests
+				UnitTestRequest editable = new UnitTestRequest();
+				editable.setTestName(responseItem.getTestName());
+				editable.setAssertion(responseItem.getAssertion());
+				editable.setClassName(responseItem.getClassName());
+				editable.setClassPath("");
+				editable.setFunctionName(responseItem.getFunctionName());
+
+				List<Parameter> params = new ArrayList<Parameter>();
+
+				String parameters = "";
+				for (int k = 0; k <= responseItem.getParameters().size() - 1; k++) {
+					parameters += responseItem.getParameters().get(k).getName() + " - ";
+					params.add(new Parameter(responseItem.getParameters().get(k).getName(),
+							responseItem.getParameters().get(k).getType(),
+							responseItem.getParamValues().get(k).toString()));
+				}
+				item.setText(3, parameters);
+				editable.setParameters(params);
+
+				String expected = responseItem.getAssertion();
+				item.setText(4, expected);
+
+				Expected exp = new Expected(responseItem.getExpectedType(), responseItem.getExpectedValue().toString());
+				editable.setExpected(exp);
+
+				// Set attributes for the button to load edition window
+				Button editBtn = new Button(table, SWT.PUSH);
+				editBtn.setText("Edit");
+				editBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				editBtn.addListener(SWT.Selection, event -> loadEditionWindow(parent, editable));
+
+				TableEditor editor = new TableEditor(table);
+				editor.setEditor(editBtn, item, 5);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = editBtn.getSize().y;
+				editor.minimumWidth = editBtn.getSize().x;
+
+				// Set attributes for the delete button
+				Button deleteBtn = new Button(table, SWT.PUSH);
+				deleteBtn.setText("Delete");
+				deleteBtn.computeSize(SWT.DEFAULT, table.getItemHeight());
+				deleteBtn.addListener(SWT.Selection, event -> deleteUnitTest(parent.getShell(), editable));
+
+				editor = new TableEditor(table);
+				editor.setEditor(deleteBtn, item, 6);
+
+				// Set attributes of the editor
+				editor.grabHorizontal = true;
+				editor.minimumHeight = deleteBtn.getSize().y;
+				editor.minimumWidth = deleteBtn.getSize().x;
+			}
+		} catch (JsonIOException | IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < columns.length; i++) {
+			table.getColumn(i).pack();
+		}
+		
+		// Refreshes view
+		layer.requestLayout();
+	}
+	
 	private void loadCreationWindow(Composite parent) {
 		folder = (CTabFolder) parent;
 

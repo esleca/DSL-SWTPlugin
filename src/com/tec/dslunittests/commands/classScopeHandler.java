@@ -57,11 +57,6 @@ public class classScopeHandler implements IHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// TODO Auto-generated method stub
-		//System.out.print(HandlerUtil.getActiveWorkbenchWindow(event)
-          //      .getActivePage().getActiveEditor().getTitle());		
-	
-
-
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();

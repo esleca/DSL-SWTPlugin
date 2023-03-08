@@ -44,12 +44,12 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="com.tec.dslunittests.commands.classScopeHandler"
+            defaultHandler="com.tec.dslunittests.handlers.classHandler"
             id="com.tec.dslunittests.commands.classScope"
             name="ClassScope">
       </command>
       <command
-            defaultHandler="com.tec.dslunittests.commands.PackageScopeHandler"
+            defaultHandler="com.tec.dslunittests.handlers.packageHandler"
             id="com.tec.dslunittests.commands.PackageScope"
             name="PackageScope">
       </command>

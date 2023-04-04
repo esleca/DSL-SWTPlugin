@@ -1,20 +1,11 @@
 package com.tec.dslunittests;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
-
-import com.tec.dslunittests.models.Message;
-import com.tec.dslunittests.models.UnitTestRequest;
-import com.tec.dslunittests.resources.Constants;
 
 public class UnitTests extends ViewPart {
 

@@ -3,34 +3,6 @@
 <target name="Running Platform">
 	<locations>
 		<location path="${eclipse_home}" type="Profile"/>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="DSL" missingManifest="generate" type="Maven">
-
-			<feature id="dsl.library" label="dsl library" version="1.0.0.qualifier">
-
-   
-
-   
-
-   
-				<description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-				<copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-				<license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-			</feature>
-			<dependencies>
-				<dependency>
-					<groupId>avib.coderetriever</groupId>
-					<artifactId>avib.coderetriever.dsl</artifactId>
-					<version>1.0</version>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-		</location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 
 			<feature id="maven.springboot.autoconfigure.library" label="springboot autoconfigure library" version="1.0.0.qualifier">
@@ -54,7 +26,7 @@
 				<dependency>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-autoconfigure</artifactId>
-					<version>2.7.0</version>
+					<version>2.7.1</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
@@ -82,7 +54,7 @@
 				<dependency>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-beans</artifactId>
-					<version>5.3.21</version>
+					<version>6.0.7</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
@@ -138,7 +110,17 @@
 				<dependency>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-context</artifactId>
-					<version>5.3.22</version>
+					<version>6.0.7</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeSource="true" missingManifest="generate" type="Maven">
+			<dependencies>
+				<dependency>
+					<groupId>avib.coderetriever</groupId>
+					<artifactId>avib.coderetriever.dsl</artifactId>
+					<version>1.0</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>

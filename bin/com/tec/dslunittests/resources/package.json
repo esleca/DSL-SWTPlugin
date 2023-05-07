@@ -1,7 +1,7 @@
 {
   "className": "ClientRepository",
   "function": "isUserAuthorized",
-  "testName": "test_nameyut",
+  "testName": "test_namennnn",
   "assertion": "isTrue",
   "classPath": "C:\\Users\\karin\\eclipse-workspace\\Console_ATM\\src\\com\\bank\\atm\\dal\\ClientRepository.java",
   "language": "JAVA",
@@ -15,7 +15,7 @@
     {
       "name": "pin",
       "type": "int",
-      "value": "1"
+      "value": "34"
     }
   ],
   "expected": {

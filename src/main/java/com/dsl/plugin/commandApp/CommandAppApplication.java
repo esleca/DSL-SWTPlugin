@@ -80,6 +80,7 @@ public class CommandAppApplication implements CommandLineRunner {
 
                         PackageTestsRequest lstReq = new PackageTestsRequest(packageName);
                         List<UnitTestResponse> pkgList = dsl.getPackageUnitTests(lstReq);
+                        LOG.info("Test number: " + pkgList.size());
                         dout.writeUTF(new Gson().toJson(pkgList));
                         dout.flush();
                     } else if(msg.getListCode().equals("FUNCTION")){

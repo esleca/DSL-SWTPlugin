@@ -21,7 +21,7 @@ public class AccountRepository {
 			if (rowsInserted > 0) {
 				boolean update = updateBalance(account, amount);
 				if (update) {
-					return Constants.transaction_error;
+					return Constants.transaction_success;
 				} else {
 					return Constants.transaction_error;
 				}

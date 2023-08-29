@@ -4,113 +4,11 @@
 	<locations>
 		<location path="${eclipse_home}" type="Profile"/>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
-
-			<feature id="maven.springboot.autoconfigure.library" label="springboot autoconfigure library" version="1.0.0.qualifier">
-
-   
-
-   
-
-   
-				<description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-				<copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-				<license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-			</feature>
 			<dependencies>
 				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-autoconfigure</artifactId>
-					<version>2.7.1</version>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
-
-			<feature id="maven.spring.beans.library" label="spring beans library" version="1.0.0.qualifier">
-
-   
-
-   
-
-   
-				<description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-				<copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-				<license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-			</feature>
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-					<version>6.0.7</version>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
-
-			<feature id="maven.springboot.starter.library" label="springboot starter library" version="1.0.0.qualifier">
-
-   
-
-   
-
-   
-				<description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-				<copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-				<license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-			</feature>
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter</artifactId>
-					<version>2.7.1</version>
-					<type>jar</type>
-				</dependency>
-			</dependencies>
-		</location>
-		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
-
-			<feature id="maven.springframework.context.library" label="springframework context library" version="1.0.0.qualifier">
-
-   
-
-   
-
-   
-				<description url="http://www.example.com/description">
-      [Enter Feature Description here.]
-   </description>
-				<copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-				<license url="http://www.example.com/license">
-      [Enter License Description here.]
-   </license>
-			</feature>
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-					<version>6.0.7</version>
+					<groupId>avib.coderetriever</groupId>
+					<artifactId>avib.coderetriever.dsl</artifactId>
+					<version>1.0</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
@@ -118,9 +16,9 @@
 		<location includeDependencyDepth="none" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
-					<groupId>avib.coderetriever</groupId>
-					<artifactId>avib.coderetriever.dsl</artifactId>
-					<version>1.0</version>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+					<version>2.10</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>

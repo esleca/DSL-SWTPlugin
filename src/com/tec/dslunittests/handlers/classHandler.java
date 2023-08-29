@@ -45,6 +45,7 @@ public class classHandler extends AbstractHandler {
 	 		IPath path = ((IPathEditorInput)input).getPath();
 	 		System.out.println(path.toOSString());
 
+
 	 		try {
 	 			//Retrieves or displays plugin view into workbench
 	 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()

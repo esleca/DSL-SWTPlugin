@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Text;
 import com.dsl.models.dtos.ClassFunctionsRequest;
 import com.dsl.models.dtos.ClassFunctionsResponse;
 import com.dsl.models.dtos.UnitTestResponse;
+import com.dsl.models.parameters.ParameterFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -56,13 +57,16 @@ public class CreationWindow {
 	private Gson gson;
 	private UnitTestRequest data = new UnitTestRequest();
 	private Combo expectedTypeCb, assertionsCb;
+	private List<ClassFunctionsResponse> functionInfoList;
+	private String[] functionList;
 
 	public CreationWindow() {
-
+		
 	}
 
 	public CreationWindow(String path) {
 		this.path = path;
+		this.functionList = getFunctions();
 	}
 
 	/**
@@ -83,7 +87,7 @@ public class CreationWindow {
 		Composite left = new Composite(layer, SWT.NONE);
 		Composite center = new Composite(layer, SWT.NONE);
 		Composite right = new Composite(layer, SWT.NONE);
-
+		
 		// Alignment of the widgets inside columns
 		GridData leftData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		GridData centerData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -120,6 +124,8 @@ public class CreationWindow {
 		formGroup.setLayout(formLayout);
 		formGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+		Composite dynamic = new Composite(formGroup, SWT.NONE);
+
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Function name:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
@@ -133,9 +139,8 @@ public class CreationWindow {
 		Combo functionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 		functionsCb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 
-		// Define available data types
-		String[] functions = getFunctions();
-		functionsCb.setItems(functions);
+		// Define available functions for tests
+		functionsCb.setItems(functionList);
 		functionsCb.select(0);
 
 		// User select a item in the Combo.
@@ -144,6 +149,7 @@ public class CreationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				int idx = functionsCb.getSelectionIndex();
 				selectedFunction = functionsCb.getItem(idx);
+				loadParameters(selectedFunction, dynamic);
 			}
 		});
 
@@ -160,42 +166,57 @@ public class CreationWindow {
 		nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		nameTxt.setText(getUTName());
 
-		label = new Label(formGroup, SWT.NONE);
-		label.setText("Parameters:");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
-		makeBold(label);
-
-		// Create a dropdown Combo & Read only
-		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-
 		// Define available data types
 		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float", "long" };
-		typesCb.setItems(types);
-		typesCb.select(0);
 
-		// User select a item in the Combo.
-		typesCb.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int idx = typesCb.getSelectionIndex();
-				selectedNewParamType = typesCb.getItem(idx);
-			}
-		});
+		// ------------------------- old parameter input ------------------
+		/*
+		 * label = new Label(formGroup, SWT.NONE); label.setText("Parameters:");
+		 * label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+		 * makeBold(label);
+		 * 
+		 * // Create a dropdown Combo & Read only Combo typesCb = new Combo(formGroup,
+		 * SWT.DROP_DOWN | SWT.READ_ONLY); typesCb.setItems(types); typesCb.select(0);
+		 * 
+		 * // User select a item in the Combo. typesCb.addSelectionListener(new
+		 * SelectionAdapter() {
+		 * 
+		 * @Override public void widgetSelected(SelectionEvent e) { int idx =
+		 * typesCb.getSelectionIndex(); selectedNewParamType = typesCb.getItem(idx); }
+		 * });
+		 * 
+		 * newParameterTxt = new Text(formGroup, SWT.BORDER);
+		 * newParameterTxt.setMessage("Parameter name");
+		 * newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true,
+		 * 1, 1));
+		 * 
+		 * newParameterValueTxt = new Text(formGroup, SWT.BORDER);
+		 * newParameterValueTxt.setMessage("Parameter value");
+		 * newParameterValueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+		 * true, 1, 1));
+		 * 
+		 * // Adds new parameter to the list addBtn = new Button(formGroup, SWT.PUSH);
+		 * addBtn.setText("+"); addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+		 * true, true, 1, 1)); addBtn.addListener(SWT.Selection, event ->
+		 * addParameter(newParameterTxt.getText(), selectedNewParamType,
+		 * newParameterValueTxt.getText(), layer.getShell()));
+		 */
 
-		newParameterTxt = new Text(formGroup, SWT.BORDER);
-		newParameterTxt.setMessage("Parameter name");
-		newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		// ----------------------------------------------------------------
 
-		newParameterValueTxt = new Text(formGroup, SWT.BORDER);
-		newParameterValueTxt.setMessage("Parameter value");
-		newParameterValueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		// ------------------------ start dynamic parameters ---------------------
 
-		// Adds new parameter to the list
-		addBtn = new Button(formGroup, SWT.PUSH);
-		addBtn.setText("+");
-		addBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		addBtn.addListener(SWT.Selection,
-				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText(), layer.getShell()));
+
+		GridData dynamicData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		dynamic.setLayoutData(dynamicData);
+		FillLayout dynamicLayout = new FillLayout(SWT.HORIZONTAL);
+		dynamic.setLayout(dynamicLayout);
+		paramListLbl = new Label(dynamic, SWT.NONE);
+		paramListLbl.setText(" ");
+		paramListLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 5, 1));
+		
+  
+		// ------------------------ end dynamic parameters -----------------------
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Expected:");
@@ -313,12 +334,12 @@ public class CreationWindow {
 	}
 
 	private void save(Shell parent) {
-		if(selectedFunction == null || selectedFunction == "") {
+		if (selectedFunction == null || selectedFunction == "") {
 			MessageBox msgBox = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
 			msgBox.setText("Missing information");
 			msgBox.setMessage("Select function name");
 			msgBox.open();
-		}else {
+		} else {
 			data.setClassPath(path);
 			data.setClassName(getClassName());
 			data.setFunctionName(selectedFunction);
@@ -337,11 +358,12 @@ public class CreationWindow {
 
 			if (returnCode == 32) {
 				try {
-					Writer writer = new FileWriter(
-							"D:\\TEC\\2022\\I semestre\\Asistencia\\DSL-SWTPlugin\\src\\com\\tec\\dslunittests\\resources\\package.json");
-					gson.toJson(data, writer);
-					writer.flush(); // flush data to file <---
-					writer.close(); // close writer <---
+					/*
+					 * Writer writer = new FileWriter(
+					 * "D:\\TEC\\2022\\I semestre\\Asistencia\\DSL-SWTPlugin\\src\\com\\tec\\dslunittests\\resources\\package.json"
+					 * ); gson.toJson(data, writer); writer.flush(); // flush data to file <---
+					 * writer.close(); // close writer <---
+					 */
 
 					Message msg = new Message("CREATE", new Gson().toJson(data).toString(), "");
 
@@ -365,7 +387,7 @@ public class CreationWindow {
 				}
 			}
 		}
-		
+
 	}
 
 	private void clear() {
@@ -383,26 +405,26 @@ public class CreationWindow {
 	}
 
 	private void addParameter(String name, String type, String value, Shell parent) {
-		if(type == "" || selectedNewParamType == null || type == null) {
+		if (type == "" || selectedNewParamType == null || type == null) {
 			MessageBox msgBox = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
 			msgBox.setText("Missing information");
 			msgBox.setMessage("Select parameter type");
 			msgBox.open();
-		}else {
-		Parameter newParam = new Parameter();
-		newParam.setName(name);
-		newParam.setType(type);
-		newParam.setValue(value);
-		data.getParameters().add(newParam);
+		} else {
+			Parameter newParam = new Parameter();
+			newParam.setName(name);
+			newParam.setType(type);
+			newParam.setValue(value);
+			data.getParameters().add(newParam);
 
-		newParameterTxt.setText("");
-		selectedNewParamType = "";
-		newParameterValueTxt.setText("");
+			newParameterTxt.setText("");
+			selectedNewParamType = "";
+			newParameterValueTxt.setText("");
 
-		paramListLbl.setText(paramListLbl.getText() + ", " + name + " " + type + " " + value);
+			paramListLbl.setText(paramListLbl.getText() + ", " + name + " " + type + " " + value);
 
-		makeBold(paramListLbl);
-		paramListLbl.pack();
+			makeBold(paramListLbl);
+			paramListLbl.pack();
 		}
 	}
 
@@ -424,14 +446,14 @@ public class CreationWindow {
 			dout.flush();
 			Type listType = new TypeToken<ArrayList<ClassFunctionsResponse>>() {
 			}.getType();
-			List<ClassFunctionsResponse> list = new Gson().fromJson(din.readUTF(), listType);
+			functionInfoList = new Gson().fromJson(din.readUTF(), listType);
 			socket.close();
-			
-			String[] functions = new String[list.size()];
-			for (int i = 0; i < list.size(); i++) {
-				functions[i] = list.get(i).getName();
+
+			String[] functions = new String[functionInfoList.size()];
+			for (int i = 0; i < functionInfoList.size(); i++) {
+				functions[i] = functionInfoList.get(i).getName();
 			}
-			System.out.print(list.get(0).getName());
+			System.out.print(functionInfoList.get(0).getName());
 			return functions;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -441,6 +463,34 @@ public class CreationWindow {
 			e.printStackTrace();
 		}
 		return null;
+	}
 
+	private void loadParameters(String functionName, Composite group) {
+		try {
+			for (int i = 0; i < functionInfoList.size(); i++) {
+				if (functionInfoList.get(i).getName().equals(selectedFunction)) {
+					ArrayList<ParameterFunction> parameterList = functionInfoList.get(0).getParameters();
+					parameterList.forEach((param) -> {
+						label = new Label(group, SWT.NONE);
+						label.setText(param.getName());
+						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+
+						label = new Label(group, SWT.NONE);
+						label.setText(param.getType());
+						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
+
+						Text valueTxt = new Text(group, SWT.BORDER);
+						valueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+						valueTxt.setText("");
+					});
+					group.pack();
+					break;
+				}
+
+			}
+
+		} catch (Exception e) {
+			System.out.print("could not load the parameters");
+		}
 	}
 }

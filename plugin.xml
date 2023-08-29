@@ -3,7 +3,12 @@
 <plugin>
    <extension
          point="org.eclipse.ui.views">
+             <category
+            name="DSL"
+            id="DSL">
+      </category>
       <view
+            category="DSL"
             class="com.tec.dslunittests.UnitTests"
             id="com.tec.dslunittests.UnitTests"
             name="Unit Tests"

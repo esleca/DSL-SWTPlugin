@@ -133,6 +133,7 @@ public class CreationWindow {
 		submit.setLayoutData(submitData);
 
 		GridLayout dynamicLayout = new GridLayout(5, true);
+		dynamicLayout.horizontalSpacing = 10;
 		dynamic.setLayout(dynamicLayout);
 
 		GridLayout submitLayout = new GridLayout(5, true);
@@ -146,6 +147,7 @@ public class CreationWindow {
 		GridLayout formLayout = new GridLayout(5, true);
 		formLayout.horizontalSpacing = 10;
 		formLayout.marginTop = 5;
+		formLayout.marginBottom = 5;
 		formGroup.setLayout(formLayout);
 		formGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -190,9 +192,6 @@ public class CreationWindow {
 		nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		nameTxt.setText(getUTName());
 
-		// Define available data types
-		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float", "long" };
-
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Expected:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
@@ -202,16 +201,14 @@ public class CreationWindow {
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		String[] assertions = new String[] { "isNull", "isTrue", "isFalse", "areEqual", "areNotEqual",
-				"isInstanceOfType" };
-		assertionsCb.setItems(assertions);
+		assertionsCb.setItems(Constants.assertions);
 		assertionsCb.setText("Assert");
 
 		// Create a dropdown Combo & Read only
 		expectedTypeCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 
 		// Define available asserts
-		expectedTypeCb.setItems(types);
+		expectedTypeCb.setItems(Constants.types);
 		expectedTypeCb.setText("Data type");
 		expectedTypeCb.setVisible(false);
 
@@ -256,14 +253,10 @@ public class CreationWindow {
 		label.setText("");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 
-		paramListLbl = new Label(formGroup, SWT.NONE);
-		paramListLbl.setText(" ");
-		paramListLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 5, 1));
-
 		// ------------------------------------------------------------------------------------------------------------------------
 
-		// label = new Label(submitGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
-		// label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 5, 1));
+		 label = new Label(submit, SWT.SEPARATOR | SWT.HORIZONTAL);
+		 label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 5, 1));
 
 		// Saves the unit test information
 		saveBtn = new Button(submit, SWT.PUSH);
@@ -292,13 +285,15 @@ public class CreationWindow {
 			formLayout.marginWidth = (int) (size.x * 0.015);
 
 			formData.heightHint = (int) (size.y * 0.5);
-			dynamicData.heightHint = (int) (size.y * 0.25);
+			dynamicData.heightHint = (int) (size.y * 0.4);
 			submitData.heightHint = size.y - formData.heightHint - dynamicData.heightHint;
 
 		});
 
 		formGroup.pack();
 		center.pack();
+		dynamic.pack();
+		submit.pack();
 
 		return layer;
 	}
@@ -479,35 +474,6 @@ public class CreationWindow {
 						});
 						
 					}
-					/*
-					parameterList.forEach((param) -> {
-						label = new Label(group, SWT.NONE);
-						label.setText(param.getName());
-						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
-
-						label = new Label(group, SWT.NONE);
-						label.setText(param.getType());
-						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
-						
-						Parameter newParam = new Parameter();
-						newParam.setName(param.getName());
-						newParam.setType(param.getType());
-
-						Text valueTxt = new Text(group, SWT.BORDER);
-						valueTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
-						valueTxt.setText("");
-						valueTxt.addModifyListener(new ModifyListener() {
-
-							public void modifyText(ModifyEvent e) {
-								Text txt = (Text) e.widget;
-								System.out.println(txt.getText());
-								
-								newParam.setValue(txt.getText());
-								data.getParameters().add(i, newParam);
-
-							}
-						});
-					});*/
 					group.pack();
 					break;
 				}

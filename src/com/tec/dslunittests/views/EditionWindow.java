@@ -35,6 +35,7 @@ import com.google.gson.JsonIOException;
 import com.tec.dslunittests.models.Expected;
 import com.tec.dslunittests.models.Parameter;
 import com.tec.dslunittests.models.UnitTestRequest;
+import com.tec.dslunittests.resources.Constants;
 
 public class EditionWindow {
 
@@ -127,18 +128,16 @@ public class EditionWindow {
 		nameTxt = new Text(formGroup, SWT.BORDER);
 		nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		nameTxt.setText(testData.getTestName());
-
+/*
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Parameters:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
-		// Define available data types
-		String[] types = new String[] { "int", "String", "boolean", "char", "double", "float","long" };
 				
 		// Create a dropdown Combo & Read only
 		Combo typesCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		typesCb.setItems(types);
+		typesCb.setItems(Constants.types);
 		typesCb.select(0);
 
 		// User select a item in the Combo.
@@ -150,6 +149,7 @@ public class EditionWindow {
 			}
 		});
 
+		
 		newParameterTxt = new Text(formGroup, SWT.BORDER);
 		newParameterTxt.setMessage("Parameter name");
 		newParameterTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
@@ -166,7 +166,7 @@ public class EditionWindow {
 				event -> addParameter(newParameterTxt.getText(), selectedNewParamType, newParameterValueTxt.getText()));
 		
 		paramListLbl = new Label(formGroup, SWT.NONE);
-		paramListLbl.setText(" "); 
+		paramListLbl.setText(" "); */
 		
 		//Make all parameters editable
 		currentParameters = testData.getParameters();
@@ -179,7 +179,7 @@ public class EditionWindow {
 			
 					
 			Combo paramType = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-			paramType.setItems(types);
+			paramType.setItems(Constants.types);
 			String type = currentParameters.get(i).getType();
 			if ( type.equals("int")){
 				paramType.select(0);
@@ -261,8 +261,8 @@ public class EditionWindow {
 			label.setText("");
 			label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 			
-			paramListLbl.setText(paramListLbl.getText() + ", " + currentParameters.get(i).getName() + " " + currentParameters.get(i).getType() + " "
-					+ currentParameters.get(i).getValue());
+			//paramListLbl.setText(paramListLbl.getText() + ", " + currentParameters.get(i).getName() + " " + currentParameters.get(i).getType() + " "
+			//		+ currentParameters.get(i).getValue());
 		}
 
 		label = new Label(formGroup, SWT.NONE);
@@ -271,44 +271,44 @@ public class EditionWindow {
 		makeBold(label);
 
 		// Define available asserts
-		String[] asserts = new String[] { "isNull", "isTrue", "isFalse", "areEqual", "areNotEqual", "isInstanceOf" };
 
 		// Create a dropdown Combo & Read only
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		assertionsCb.setItems(asserts);
+		assertionsCb.setItems(Constants.assertions);
 		//assertionsCb.select(0);
 		
 		String assertion = testData.getAssertion();
 		if ( assertion.equals("isNull")){
 			assertionsCb.select(0);
-		}
-		else if(assertion.equals("isTrue"))
+		}		
+		else if(assertion.equals("isNotNull"))
 		{
 			assertionsCb.select(1);
 		}
-		else if(assertion.equals("isFalse"))
+		else if(assertion.equals("isTrue"))
 		{
 			assertionsCb.select(2);
 		}
-		else if(assertion.equals("areEqual"))
+		else if(assertion.equals("isFalse"))
 		{
 			assertionsCb.select(3);
 		}
-		else if(assertion.equals("areNotEqual"))
+		else if(assertion.equals("areEqual"))
 		{
 			assertionsCb.select(4);
 		}
-		else if(assertion.equals("isInstanceOf"))
+		else if(assertion.equals("areNotEqual"))
 		{
 			assertionsCb.select(5);
 		}
+
 		
 		
 		assertionsCb.pack();
 
 		// Create a dropdown Combo & Read only
 		expectedTypeCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		expectedTypeCb.setItems(types);
+		expectedTypeCb.setItems(Constants.types);
 		expectedTypeCb.select(0);
 		expectedTypeCb.setVisible(false);
 
@@ -352,7 +352,7 @@ public class EditionWindow {
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 
 
-		paramListLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 5, 1));
+		//paramListLbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 5, 1));
 
 		label = new Label(formGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 5, 1));
@@ -423,18 +423,12 @@ public class EditionWindow {
 
 		if (returnCode == 32) {
 			try {
-				Writer writer = new FileWriter(
-						"D:\\TEC\\2022\\I semestre\\Asistencia\\DSL-SWTPlugin\\src\\com\\tec\\dslunittests\\resources\\package.json");
-				gson.toJson(testData, writer);
-				writer.flush(); // flush data to file <---
-				writer.close(); // close writer <---
-
 				MessageBox msg = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
 				msg.setText("Edition confirmation");
 				msg.setMessage("Unit test was edited sucessfully");
 				msg.open();
 
-			} catch (JsonIOException | IOException e) {
+			} catch (JsonIOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

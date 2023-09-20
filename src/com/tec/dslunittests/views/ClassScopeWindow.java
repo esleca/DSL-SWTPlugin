@@ -132,6 +132,8 @@ public class ClassScopeWindow {
 			centerData.widthHint = size.x - leftData.widthHint - rightData.widthHint;
 
 		});
+		
+		layer.pack();
 		// Saves the unit test information
 		refreshBtn = new Button(left, SWT.PUSH);
 		refreshBtn.setText("Refresh");
@@ -139,14 +141,14 @@ public class ClassScopeWindow {
 	
 
 		// Saves the unit test information
-		newBtn = new Button(right, SWT.PUSH);
+		newBtn = new Button(left, SWT.PUSH);
 		newBtn.setText("New unit test");
 		newBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		newBtn.addListener(SWT.Selection, event -> loadCreationWindow(parent));
 
 		Gson gson = new Gson();
 		
-		Table table = new Table(layer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
+		Table table = new Table(bottomLayer, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);

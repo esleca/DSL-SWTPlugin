@@ -52,10 +52,10 @@ public class CreationWindow {
 
 	private Group formGroup;
 	private Button saveBtn, cleanBtn;
-	private Label label, paramListLbl;
-	private Text nameTxt, expectedTxt, newParameterTxt, newParameterValueTxt;
+	private Label label, paramListLbl, expTypeLabel, expValLabel, expectedType;
+	private Text nameTxt, expectedTxt;
 	private Composite layer;
-	private String selectedAssertion, selectedExpectedType, selectedNewParamType, path, selectedFunction;
+	private String selectedAssertion, selectedExpectedType, path, selectedFunction;
 	private UnitTestRequest data = new UnitTestRequest();
 	private Combo expectedTypeCb, assertionsCb;
 	private List<ClassFunctionsResponse> functionInfoList;
@@ -106,59 +106,50 @@ public class CreationWindow {
 		center.setLayout(centerLayout);
 
 		// Displays information about the location of the unit test
-		label = new Label(left, SWT.NONE);
-		label.setText("Class name:");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
-		makeBold(label);
 
-		label = new Label(left, SWT.NONE);
-		label.setText(getClassName());
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
 
 		// ------------------------ start dynamic parameters ---------------------
 
 		Composite form = new Composite(center, SWT.NONE);
 
-		Composite dynamic = new Composite(center, SWT.NONE);
-
-		Composite submit = new Composite(center, SWT.NONE);
+		Composite submit = new Composite(center, SWT.NONE);  
+		
 
 		GridData formData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		form.setLayoutData(formData);
 
-		GridData dynamicData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		dynamic.setLayoutData(dynamicData);
-
-		GridData submitData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData submitData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		submit.setLayoutData(submitData);
 
-		GridLayout dynamicLayout = new GridLayout(5, true);
-		dynamicLayout.horizontalSpacing = 10;
-		dynamic.setLayout(dynamicLayout);
-
-		GridLayout submitLayout = new GridLayout(5, true);
-		submit.setLayoutData(dynamicData);
+		GridLayout submitLayout = new GridLayout(3, true);
 		submit.setLayout(submitLayout);
 		// ------------------------ end dynamic parameters -----------------------
 
 		// Form to define the parameters of the unit test
 		formGroup = new Group(form, SWT.FILL);
 		formGroup.setText("New unit test");
-		GridLayout formLayout = new GridLayout(5, true);
+		GridLayout formLayout = new GridLayout(3, true);
 		formLayout.horizontalSpacing = 10;
 		formLayout.marginTop = 5;
-		formLayout.marginBottom = 5;
+		formLayout.marginBottom = 0;
 		formGroup.setLayout(formLayout);
 		formGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		label = new Label(formGroup, SWT.NONE);
+		label.setText("Class name:");
+		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
+		makeBold(label);
+
+		label = new Label(formGroup, SWT.NONE);
+		label.setText(getClassName());
+		label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Function name:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
-		label = new Label(formGroup, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
+
 
 		// Create a dropdown Combo & Read only
 		Combo functionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -166,7 +157,7 @@ public class CreationWindow {
 
 		// Define available functions for tests
 		functionsCb.setItems(functionList);
-		functionsCb.select(0);
+		//functionsCb.select(0);
 
 		// User select a item in the Combo.
 		functionsCb.addSelectionListener(new SelectionAdapter() {
@@ -174,52 +165,47 @@ public class CreationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				int idx = functionsCb.getSelectionIndex();
 				selectedFunction = functionsCb.getItem(idx);
-
-				loadParameters(selectedFunction, dynamic);
+				loadParameters(formGroup);
 			}
 		});
+		
 
 		label = new Label(formGroup, SWT.NONE);
 		label.setText("Test name:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
-		label = new Label(formGroup, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
-
 		nameTxt = new Text(formGroup, SWT.BORDER);
 		nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		nameTxt.setText(getUTName());
-
+		
 		label = new Label(formGroup, SWT.NONE);
-		label.setText("Expected:");
+		label.setText("Expected assert:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		makeBold(label);
 
 		// Create a dropdown Combo & Read only
 		assertionsCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-
+		assertionsCb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		// Define available asserts
 		assertionsCb.setItems(Constants.assertions);
 		assertionsCb.setText("Assert");
 
+		
+		//------------------------------------------------------------------------------------------------------- 
+		
+		expTypeLabel = new Label(formGroup, SWT.NONE);
+		expTypeLabel.setText("Expected type:");
+		expTypeLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+		makeBold(expTypeLabel);
+		expTypeLabel.setVisible(false);
+		
 		// Create a dropdown Combo & Read only
-		expectedTypeCb = new Combo(formGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+		expectedType = new Label(formGroup, SWT.NONE);
+		expectedType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+		expectedType.setText(data.getExpected().getType());
+		expectedType.setVisible(false);
 
-		// Define available asserts
-		expectedTypeCb.setItems(Constants.types);
-		expectedTypeCb.setText("Data type");
-		expectedTypeCb.setVisible(false);
-
-		// User select a item in the Combo.
-		expectedTypeCb.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int idx = expectedTypeCb.getSelectionIndex();
-				selectedExpectedType = expectedTypeCb.getItem(idx);
-			}
-		});
 
 		// User select a item in the Combo.
 		assertionsCb.addSelectionListener(new SelectionAdapter() {
@@ -227,41 +213,46 @@ public class CreationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				int idx = assertionsCb.getSelectionIndex();
 				String selected = assertionsCb.getItem(idx);
-				if (selected.equals("isNull") || selected.equals("isTrue") || selected.equals("isFalse")) {
+				if (selected.equals("isNull") || selected.equals("isNotNull") || selected.equals("isTrue") || selected.equals("isFalse")) {
 					selectedAssertion = selected;
-					expectedTypeCb.setVisible(false);
+					expectedType.setVisible(false);
 					expectedTxt.setVisible(false);
 					expectedTxt.setText("");
-					selectedExpectedType = "boolean";
+					selectedExpectedType = "null";
+					//objeto expected nulo
 					expectedTxt.setText("false");
+					expTypeLabel.setVisible(false);
+					expValLabel.setVisible(false);
 				} else {
 					selectedAssertion = selected;
-					expectedTypeCb.setVisible(true);
+					expectedType.setVisible(true);
 					expectedTxt.setVisible(true);
 					expectedTxt.setText("");
-
+					expTypeLabel.setVisible(true);
+					expValLabel.setVisible(true);
 				}
 			}
 		});
+		
+		
+		expValLabel = new Label(formGroup, SWT.NONE);
+		expValLabel.setText("Expected value:");
+		expValLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+		makeBold(expValLabel);
+		expValLabel.setVisible(false);
 
 		expectedTxt = new Text(formGroup, SWT.BORDER);
-		expectedTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		expectedTxt.setMessage("Expected value");
+		expectedTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 		expectedTxt.setVisible(false);
 
-		label = new Label(formGroup, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 
 		// ------------------------------------------------------------------------------------------------------------------------
-
-		 label = new Label(submit, SWT.SEPARATOR | SWT.HORIZONTAL);
-		 label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 5, 1));
 
 		// Saves the unit test information
 		saveBtn = new Button(submit, SWT.PUSH);
 		saveBtn.setText("Save");
-		saveBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+		saveBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		saveBtn.setSize(92, 29);
 		saveBtn.addListener(SWT.Selection, event -> save(layer.getShell()));
 
 		label = new Label(submit, SWT.NONE);
@@ -271,28 +262,27 @@ public class CreationWindow {
 		// Clears the data of the form
 		cleanBtn = new Button(submit, SWT.PUSH);
 		cleanBtn.setText("Clean");
-		cleanBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+		cleanBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		cleanBtn.addListener(SWT.Selection, event -> clear());
 
 		// Modifies dynamically the size of the columns on resize of the main window
 		parent.addListener(SWT.Resize, arg0 -> {
 			Point size = parent.getSize();
 
-			leftData.widthHint = (int) (size.x * 0.25);
-			rightData.widthHint = (int) (size.x * 0.25);
+			leftData.widthHint = (int) (size.x * 0.05);
+			rightData.widthHint = (int) (size.x * 0.05);
 			centerData.widthHint = size.x - leftData.widthHint - rightData.widthHint;
+			submitData.widthHint = size.x - leftData.widthHint - rightData.widthHint;
 
 			formLayout.marginWidth = (int) (size.x * 0.015);
+			submitLayout.marginWidth = (int) (size.x * 0.015);
 
-			formData.heightHint = (int) (size.y * 0.5);
-			dynamicData.heightHint = (int) (size.y * 0.4);
-			submitData.heightHint = size.y - formData.heightHint - dynamicData.heightHint;
+			formData.heightHint = (int) (size.y * 0.9);
 
 		});
 
 		formGroup.pack();
 		center.pack();
-		dynamic.pack();
 		submit.pack();
 
 		return layer;
@@ -322,8 +312,7 @@ public class CreationWindow {
 			data.setFunctionName(selectedFunction);
 			data.setTestName(nameTxt.getText());
 			data.setOutputPath("C:\\TestPrinter\\JAVA");
-			Expected exp = new Expected(selectedExpectedType, expectedTxt.getText());
-			data.setExpected(exp);
+			data.getExpected().setValue(expectedTxt.getText());
 			data.setAssertion(selectedAssertion);
 
 			MessageBox dialog = new MessageBox(parent, SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
@@ -348,7 +337,7 @@ public class CreationWindow {
 
 					MessageBox msgBox = new MessageBox(parent, SWT.ICON_INFORMATION | SWT.OK);
 					msgBox.setText("Creation confirmation");
-					msgBox.setMessage("New unit test was created sucessfully");
+					msgBox.setMessage("New unit test was created successfully");
 					msgBox.open();
 					clear();
 
@@ -372,31 +361,7 @@ public class CreationWindow {
 	}
 
 	private String getUTName() {
-		return "test_name";
-	}
-
-	private void addParameter(String name, String type, String value, Shell parent) {
-		if (type == "" || selectedNewParamType == null || type == null) {
-			MessageBox msgBox = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
-			msgBox.setText("Missing information");
-			msgBox.setMessage("Select parameter type");
-			msgBox.open();
-		} else {
-			Parameter newParam = new Parameter();
-			newParam.setName(name);
-			newParam.setType(type);
-			newParam.setValue(value);
-			data.getParameters().add(newParam);
-
-			newParameterTxt.setText("");
-			selectedNewParamType = "";
-			newParameterValueTxt.setText("");
-
-			paramListLbl.setText(paramListLbl.getText() + ", " + name + " " + type + " " + value);
-
-			makeBold(paramListLbl);
-			paramListLbl.pack();
-		}
+		return "";
 	}
 
 	private String getClassName() {
@@ -423,8 +388,9 @@ public class CreationWindow {
 			String[] functions = new String[functionInfoList.size()];
 			for (int i = 0; i < functionInfoList.size(); i++) {
 				functions[i] = functionInfoList.get(i).getName();
+				data.setExpected(new Expected(functionInfoList.get(i).getReturn(), ""));
+				System.out.print( functionInfoList.get(i).getReturn());
 			}
-			System.out.print(functionInfoList.get(0).getName());
 			return functions;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -436,8 +402,12 @@ public class CreationWindow {
 		return null;
 	}
 
-	private void loadParameters(String functionName, Composite group) {
+	private void loadParameters(Composite group) {
 		try {
+			label = new Label(group, SWT.NONE);
+			label.setText("Function parameters: ");
+			makeBold(label);
+			label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 3, 1));
 			for (int i = 0; i < functionInfoList.size(); i++) {
 				if (functionInfoList.get(i).getName().equals(selectedFunction)) {
 					ArrayList<ParameterFunction> parameterList = functionInfoList.get(0).getParameters();
@@ -446,12 +416,9 @@ public class CreationWindow {
 						final int index = k;
 						ParameterFunction param = parameterList.get(k);
 						label = new Label(group, SWT.NONE);
-						label.setText(param.getName());
+						label.setText(param.getType() + ' ' + param.getName());
 						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 
-						label = new Label(group, SWT.NONE);
-						label.setText(param.getType());
-						label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 2, 1));
 						
 						Parameter newParam = new Parameter();
 						newParam.setName(param.getName());
@@ -485,23 +452,4 @@ public class CreationWindow {
 		}
 	}
 
-	private void clearParams(Composite parent) {
-		/*
-		 * Composite dynamic = new Composite(center, SWT.NONE);
-		 * 
-		 * Composite submit = new Composite(center, SWT.NONE);
-		 * 
-		 * GridData formData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		 * form.setLayoutData(formData);
-		 * 
-		 * GridData dynamicData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		 * dynamic.setLayoutData(dynamicData);
-		 * 
-		 * GridData submitData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		 * submit.setLayoutData(submitData);
-		 * 
-		 * GridLayout dynamicLayout = new GridLayout(5, true);
-		 * dynamic.setLayout(dynamicLayout);
-		 */
-	}
 }
